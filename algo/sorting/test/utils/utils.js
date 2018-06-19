@@ -1,4 +1,5 @@
 module.exports = {};
+var assert = require('assert')
 
 module.exports.createArray = function( size, minValue, maxValue){
     var array = []
@@ -17,8 +18,11 @@ module.exports.checkSortIsCorrect = function( array){
 
     for( var i in array){
         if( array[ i] != example[ i]){
-            console.log( "ERROR!");
-            array.nonExist.test
+            console.log( 'expected:')
+            console.log( example);
+            console.log( 'actual:')
+            console.log( array);
+            assert( false)
         }
     }
 }
