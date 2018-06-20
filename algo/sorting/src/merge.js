@@ -12,61 +12,65 @@ copy elements back to original array
 */
 
 module.exports.sort = function(array){
-    var partitions = [];
+    var partitions = []
+    for( var i in array)
+        partitions.push( [ array[ i]])
 
-    for( var i in array){
-        partitions.push( { startIndex: parseInt( i), endIndex: parseInt( i), size: 1, members: [ array[ i]]})
-    }
+    var res = recursiveMerge( partitions)
+    //console.log( 'WOW')
+    //console.log( res)
 
-    mergePartitions( partitions);
+    for( var i in array)
+        array[ i] = res[ i]
 }
 
-function mergePartitions( partitions){
-    for( var j = 0; j < 2; j++){
-        for( var i = 0; i < partitions.length - 1; i++){
-            if( partitions[ i].size == partitions[ i + 1].size){
-                var leftPart = partitions[ i];
-                var rightPart = partitions[ i + 1];
-                var mergedPart = mergeParts( leftPart, rightPart);
-                partitions.splice( i + 1, 1);
-                partitions[ i] = mergedPart;
-            }
-        }
+function recursiveMerge( partitions){
+    //console.log( 'recursiveMerge')
+    //console.log( partitions)
+    if( partitions.length == 1)
+        return partitions
+
+    var newParts = []
+
+    for( var i = 0; i < partitions.length; i += 2){
+        newParts.push( merge( partitions[ i], partitions[ i + 1]))
     }
+
+    return recursiveMerge( newParts)
 }
 
-function mergeParts( leftPart, rightPart){
-    var tempArray = [];
+function merge( left, right){
+    if( !right)
+        return left
 
-    for( var i = leftPart.startIndex; i < rightPart.endIndex; i++){
+    //console.log( 'left', left, 'right', right)
 
-        if( leftPart.members.length == 0 || rightPart.members.length == 0)
-            break;
+    leftIndex = 0, rightIndex = 0
 
-        if( leftPart.members[ 0] < rightPart.members[ 0]){
-            tempArray.push( leftPart.members[ 0]);
-            leftPart.members.splice( 0, 1);
+    var result = []
+
+    while( leftIndex < left.length && rightIndex < right.length){
+        //console.log( 'leftIndex:', leftIndex)
+        //console.log( 'rightIndex:', rightIndex)
+        if( left[ leftIndex] < right[ rightIndex]){
+            result.push( left[ leftIndex])
+            leftIndex++
         }
         else{
-            tempArray.push( rightPart.members[ 0]);
-            rightPart.members.splice( 0, 1);
+            result.push( right[ rightIndex])
+            rightIndex++
         }
     }
 
-    if( leftPart.members.length != 0){
-        tempArray.push( leftPart.members[ 0]);
-        leftPart.members.splice( 0, 1);
+    for( var i = leftIndex; i < left.length; i ++){
+        result.push( left[ i])
     }
 
-    if( rightPart.members.length != 0){
-        tempArray.push( rightPart.members[ 0]);
-        rightPart.members.splice( 0, 1);
+    for( var i = rightIndex; i < right.length; i ++){
+        result.push( right[ i])
     }
 
-    var mergedPart = { startIndex: leftPart.startIndex,
-        endIndex: rightPart.endIndex,
-        size: tempArray.length,
-        members: tempArray }
-
-    return mergedPart;
+    //console.log( result)
+    //console.log()
+    return result
 }
