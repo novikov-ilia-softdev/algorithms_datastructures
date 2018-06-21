@@ -4,7 +4,7 @@ var utils = require( './utils/utils')
 var PATH_PREFIX = '../src/'
 var timeStamp = 'time'
 
-var sorters = [ 'bubble', 'select', 'insert', 'merge', 'merge_example']
+var sorters = [ 'bubble', 'select', 'insert', 'merge', 'merge_example', 'quick']
 
 for( var i in sorters){
     var sorter = require( PATH_PREFIX + sorters[ i])
