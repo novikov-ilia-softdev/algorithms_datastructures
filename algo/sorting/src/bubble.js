@@ -7,4 +7,6 @@ module.exports.sort = function(array){
         for( var j = i + 1; j < array.length; j++)
             if( array[ i] > array[ j])
                 utils.swap( array, i, j)
+
+    return array
 }

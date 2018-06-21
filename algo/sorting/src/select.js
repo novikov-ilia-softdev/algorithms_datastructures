@@ -11,4 +11,6 @@ module.exports.sort = function(array){
 
         utils.swap( array, i, minIndex)
     }
+
+    return array
 }
