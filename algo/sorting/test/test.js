@@ -13,7 +13,6 @@ for( var i in sorters){
     for( var i = 0; i < config.experimentsCount; i++){
         var size = utils.randomInt( config.minSize, config.maxSize);
         var array = utils.createArray( size, config.minValue, config.maxValue);
-        //var array = [ 3, 44, 38, 5, 47, 15, 36, 26, 27, 2, 46, 4, 19, 50, 48 ]
         var sortedArray = sorter.sort( array)
         utils.checkSortIsCorrect( sortedArray);
     }

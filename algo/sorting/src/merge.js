@@ -3,20 +3,8 @@ module.exports = {};
 var utils = require( './utils/utils')
 
 module.exports.sort = function( array){
-    //console.time( 'split');
     var splitted = split( array)
-    //console.timeEnd( 'split');
-
-    //console.time( 'merge');
-    var res = recursiveMerge( splitted)
-    //console.timeEnd( 'merge');
-
-    //console.time( 'final');
-    return res
-    //for( var i in array)
-    //    array[ i] = res[ i]
-    //console.timeEnd( 'final');
-    //console.log()
+    return recursiveMerge( splitted)
 }
 
 function split( array){
