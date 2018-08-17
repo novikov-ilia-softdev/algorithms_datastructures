@@ -1,27 +1,36 @@
 #include <bits/stdc++.h>
 #include <algorithm>
+
 using namespace std;
 
-#include <set>
 vector<string> split_string(string);
-typedef set<string> stringSet;
+typedef map<string, int> stringMap;
 
 // Complete the checkMagazine function below.
 void checkMagazine(vector<string> magazine, vector<string> note) {
-    stringSet magazineSet;
+    stringMap magazineStructure;
     for( auto it = magazine.begin(); it != magazine.end(); it++){
-        magazineSet.insert ( *it);
+        stringMap::iterator position = magazineStructure.find(*it);
+        if( position == magazineStructure.end()){
+             magazineStructure.insert ( pair<string, int>(*it, 1));
+        }
+        else
+        {
+            position->second++;
+        }
     }
     
     for( auto it = note.begin(); it != note.end(); it++){
-        stringSet::iterator position = magazineSet.find(*it);
-        if( position == magazineSet.end()){
+        stringMap::iterator position = magazineStructure.find(*it);
+        if( position == magazineStructure.end()){
             std::cout << "No" << std::endl;
             return;
         }
         else
         {
-            magazineSet.erase(position);
+            position->second--;
+            if( position->second == 0)
+                magazineStructure.erase(position);
         }
     }
 
