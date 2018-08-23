@@ -6,48 +6,52 @@ using namespace std;
 
 vector<string> split_string(string);
 
+struct Info{
+    Info( int i, int h): index( i), height( h) {}
+    int index;
+    int height;
+};
+
 // Complete the largestRectangle function below.
 long largestRectangle(vector<int> h) {
-    stack<int> st;
+    stack<Info> st;
+    int maxRect = 0;
+    st.push( Info( 0, h[ 0]));
     
-    int maxRect = *(min_element( h.begin(), h.end()));
-    maxRect *= h.size();
-    
-    for( int i = 0; i < h.size(); i++)
-    {
-        if( st.empty()){
-            //std::cout << "push en empty stack:" << i << std::endl;
-            st.push( i);
-            continue;
-        }
+    for( int i = 1; i < h.size(); i++)
+    {        
+        Info active = st.top();
         
-        if( h[i] > h[st.top()])
+        if( h[i] > active.height)
         {
-            //std::cout << "higher:" << i << std::endl;
-            st.push( i);
+            st.push( Info( i, h[ i]));
             continue;
         }
     
-        if( h[i] < h[st.top()])
+        if( h[i] < active.height)
         {   
-            //std::cout << "lower:" << i << std::endl;
-            while( !st.empty() && h[i] < h[st.top()])
+            Info prevActive = active;
+            while( !st.empty() && h[i] < active.height)
             {
-                //std::cout << "special case:" << st.top() << std::endl;
-                int rect = h[st.top()] * (i - st.top());
+                int rect = active.height * (i - active.index);
                 if( rect > maxRect)
                     maxRect = rect;
                 
+                prevActive = active;
                 st.pop();
+                if( !st.empty())
+                    active = st.top();
             }
+            
+            st.push( Info( prevActive.index, h[ i]));
             
             continue;
         }
     }
 
     while( !st.empty()){
-        //std::cout << "handle end:" << st.top() << std::endl;
-        int rect = h[st.top()] * (h.size() - st.top());
+        Info active = st.top();
+        int rect = active.height * (h.size() - active.index);
         if( rect > maxRect)
             maxRect = rect;
         
