@@ -16,8 +16,13 @@ vector<string> split_string(string);
  *
  */
 
-bool findPath( int graph_nodes, vector<int> graph_from, vector<int> graph_to, int node_from, int node_to, int& length){
-    vector<int> edges;
+bool findPath( int graph_nodes,
+               vector<int> graph_from, vector<int> graph_to,
+               int node_from, int node_to,
+               int& length){
+    
+    std::cout << "findPath: " << node_from << ", " << node_to << std::endl;
+    
     for( int i = 0; i < graph_from.size(); i++){
         if( graph_from[ i] == node_from && graph_to[ i] == node_to ||
             graph_from[ i] == node_to && graph_to[ i] == node_from
@@ -28,34 +33,72 @@ bool findPath( int graph_nodes, vector<int> graph_from, vector<int> graph_to, in
         }
         
         if( node_from == graph_from[ i] || node_to == graph_from[ i]){
-            edges.push_back( i);
+            vector<int> new_graph_from;
+            vector<int> new_graph_to;
+            for( int j = 0; j < graph_from.size(); j++)
+            {
+                if( i != j){
+                    new_graph_from.push_back( graph_from[ j]);
+                    new_graph_to.push_back( graph_to[ j]);
+                }
+            }
+            
+            length++;
+            return findPath( graph_nodes,
+                             new_graph_from, new_graph_to,
+                             node_from, node_to,
+                             length);
         }
     }
     
+    return false;
+    /*
     if( edges.empty())
         return false;
     
     vector<int> new_graph_from;
+    vector<int> new_graph_to;
     
     for( int i = 0; i < edges.size(); i++){
-        new_graph_from.push_back( edges[ i]);
+        if( edges[ i] != graph_from[ i]){
+            new_graph_from.push_back( edges[ i]);
+            new_graph_to.push_back( edges[ i]);
+        }
+        
     }
     
+    length++;
     
+    return findPath( graph_nodes,
+                     graph_from, graph_to,
+                     node_from, node_to,
+                     length);
+    */
 }
 
-int getPath( int graph_nodes, vector<int> graph_from, vector<int> graph_to, int node_from, int node_to){
+int getPath( int graph_nodes,
+             vector<int> graph_from, vector<int> graph_to,
+             int node_from, int node_to){
     std::cout << "getPath: " << node_from << ", " << node_to << std::endl;
     int length = 0;
-    boold found = findPath( int graph_nodes, vector<int> graph_from, vector<int> graph_to, int node_from, int node_to, length);
+    bool found = findPath( graph_nodes,
+                           graph_from, graph_to,
+                           node_from, node_to,
+                           length);
     
-    if( found)
+    if( found){
+        std::cout << "found! length ==  " << length << std::endl;
         return length;
+    }
+        
+    std::cout << "not found!" << std::endl;
     
     return -1;
 }
 
-int findShortest(int graph_nodes, vector<int> graph_from, vector<int> graph_to, vector<long> ids, int val) {
+int findShortest(int graph_nodes,
+                 vector<int> graph_from, vector<int> graph_to,
+                 vector<long> ids, int val) {
     vector<int> coloredNodes;
     
     for( int i = 0; i < ids.size(); i++){
