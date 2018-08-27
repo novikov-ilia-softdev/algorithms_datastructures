@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 
-#include <map>
 using namespace std;
 
 string ltrim(const string &);
@@ -8,54 +7,32 @@ string rtrim(const string &);
 vector<string> split(const string &);
 
 long countTriplets(vector<long> arr, long r) {
-    map <long, int> valueOnCountMap;
-    for( int i = 0; i < arr.size(); i++){
-        auto it = valueOnCountMap.find( arr[ i]);
-        if( it == valueOnCountMap.end())
-            valueOnCountMap.insert( pair<long, int>(arr[i], 1));
-        else
-            it->second++;
-    }
+    // expect -> count
+    map <long, int> thirdMap;
+    map <long, int> secondMap;
+    map <long, int> firstMap;
     
     long tripletsCount = 0;
     
-    for( auto firstTripletPart = valueOnCountMap.begin();
-         firstTripletPart != valueOnCountMap.end();
-         firstTripletPart++)
-    {
-        if( r == 1 && firstTripletPart->second >= 3){
+    for( int i = 0; i < arr.size(); i++){
+        
+        auto third = thirdMap.find( arr[ i]);
+        if( third != thirdMap.end())
+            tripletsCount += it->second;
+        
+        auto second = secondMap.find( arr[ i]);
+        if( second != secondMap.end()){
+            long thirdExpectedValue = arr[i] * r;
+            auto third = thirdMap.find( thirdExpectedValue);
+            if( third != thirdMap.end())
+                third->second += second->second;
+            else
+                thirdMap.insert( pair<long, int>(thirdExpectedValue, second->second));
             
-            /*
-            for( int i = 0; i < firstTripletPart->second; i++){
-                if( i == 2)
-                    tripletsCount = 1;
-                if( i > 2)
-                    tripletsCount *= i;
-            }
-            */
-            
-            for( int i = 0; i < firstTripletPart->second - 2; i++){
-                for( int j = i + 1; j < firstTripletPart->second - 1; j++){
-                    for( int k = j + 1; k < firstTripletPart->second; k++){
-                        tripletsCount++;
-                    }
-                }
-            }
-            
-            continue;
+            second->second++;
         }
-            
-         auto secondTripletPart = valueOnCountMap.find( firstTripletPart->first * r);
-         if( secondTripletPart != valueOnCountMap.end()){
-             auto thirdTripletPart = valueOnCountMap.find( firstTripletPart->first * r * r);
-             if( thirdTripletPart != valueOnCountMap.end())
-             {        
-                tripletsCount += firstTripletPart->second *
-                       secondTripletPart->second *
-                       thirdTripletPart->second;
-             }
-         }
-    }
+        else
+            secondMap.insert( pair<long, int>(secondExpectedValue, 1));
     
     return tripletsCount;
 }
