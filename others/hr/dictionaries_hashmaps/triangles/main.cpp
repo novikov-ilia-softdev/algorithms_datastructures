@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 
+#include <map>
 using namespace std;
 
 string ltrim(const string &);
@@ -7,33 +8,36 @@ string rtrim(const string &);
 vector<string> split(const string &);
 
 long countTriplets(vector<long> arr, long r) {
-    // expect -> count
-    map <long, int> thirdMap;
-    map <long, int> secondMap;
-    map <long, int> firstMap;
+    // map: expect value -> potential triplets count
+    map <long, long> thirdMap;
+    map <long, long> secondMap;
     
     long tripletsCount = 0;
     
-    for( int i = 0; i < arr.size(); i++){
+    for( long i = 0; i < arr.size(); i++){
         
-        auto third = thirdMap.find( arr[ i]);
-        if( third != thirdMap.end())
-            tripletsCount += it->second;
+        auto three = thirdMap.find( arr[ i]);
+        if( three != thirdMap.end())
+            tripletsCount += three->second;
         
-        auto second = secondMap.find( arr[ i]);
-        if( second != secondMap.end()){
-            long thirdExpectedValue = arr[i] * r;
-            auto third = thirdMap.find( thirdExpectedValue);
-            if( third != thirdMap.end())
-                third->second += second->second;
+        auto two = secondMap.find( arr[i]);
+        if( two != secondMap.end()){
+            auto three = thirdMap.find( arr[i] * r);
+            if (three != thirdMap.end()) 
+                three->second += two->second;
             else
-                thirdMap.insert( pair<long, int>(thirdExpectedValue, second->second));
-            
-            second->second++;
+                thirdMap.insert( pair<long, long>(arr[i] * r, two->second));
         }
-        else
-            secondMap.insert( pair<long, int>(secondExpectedValue, 1));
-    
+        
+         auto mulTwo = secondMap.find( arr[i] * r);
+         if( mulTwo != secondMap.end()) 
+            mulTwo->second++;
+         else
+            secondMap.insert( pair<long, long>(arr[i] * r, 1));
+
+    }
+        
+    //std::cout << "tripletsCount: " << std::endl;
     return tripletsCount;
 }
 
