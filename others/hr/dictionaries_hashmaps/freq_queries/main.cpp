@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 
-#include <map>
 using namespace std;
 
 string ltrim(const string &);
@@ -27,24 +26,28 @@ int incValueByKey( map<int, int>& m, int key)
         res = iter->second;
     }
     
-    return res;
-        
+    return res;   
 }
 
-void decValueByKey( map<int, int>& m, int key)
+int decValueByKey( map<int, int>& m, int key)
 {
+    int res = -1;
     auto iter = m.find( key);
     if( iter != m.end()){
         iter->second--;
-        if( iter->second == 0)
+        res = iter->second;
+        if( iter->second == 0){
+            res = 0;
             m.erase( iter);
+        }
     }
+    
+    return res;
 }
 
-// Complete the freqQuery function below.
 vector<int> freqQuery(vector<vector<int>> queries) {
     map<int, int> valueOnCountMap;
-    map<int, int> countOnValuesMap;
+    map<int, int> freqOnCountMap;
     vector<int> result;
     
     for( int i = 0; i < queries.size(); i++){
@@ -52,23 +55,27 @@ vector<int> freqQuery(vector<vector<int>> queries) {
         int cmd = query[ 0];
         int value = query[ 1];
         
-        //std::cout << "cmd: " << cmd << " " << value << std::endl;
-        
         if( cmd == 1){
             int count = incValueByKey( valueOnCountMap, value);
-            decValueByKey( countOnValuesMap, count - 1);
-            incValueByKey( countOnValuesMap, count);
+            if( count > 1)
+                decValueByKey( freqOnCountMap, count - 1);
+            incValueByKey( freqOnCountMap, count);
+            
             continue;
         }
         
         if( cmd == 2){
-            decValueByKey( valueOnCountMap, value);
+            int count = decValueByKey( valueOnCountMap, value);
+            decValueByKey( freqOnCountMap, count + 1);
+            if( count > 0)
+                incValueByKey( freqOnCountMap, count);
+            
             continue;
         }
         
         if( cmd == 3){
-            auto it = countOnValuesMap.find( value);
-            if( it != countOnValuesMap.end())
+            auto it = freqOnCountMap.find( value);
+            if( it != freqOnCountMap.end())
                 result.push_back( 1);
             else
                 result.push_back( 0);
