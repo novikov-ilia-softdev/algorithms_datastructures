@@ -5,28 +5,6 @@ using namespace std;
 const int LEFT = 0;
 const int RIGHT = 1;
 
-void print( const vector<vector<int>>& indexes)
-{
-    for( int i = 0 ; i < indexes.size(); i++)
-    {
-        std::cout << i + 1 << ": ";
-        for( int j = 0 ; j < indexes[i].size(); j++)
-        {
-            std::cout << indexes[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
-}
-
-void print_vec( const vector<int>& arr)
-{
-    for( int i = 0 ; i < arr.size(); i++)
-    {
-        std::cout << arr[i] << " ";
-    }
-    std::cout << std::endl;
-}
-
 void inOrderTraverse( const vector<vector<int>>& indexes,
                       int node,
                       int curDepth,
@@ -42,50 +20,32 @@ void inOrderTraverse( const vector<vector<int>>& indexes,
 void swapRecursive( vector<vector<int>>& indexes,
                       int node,
                       int curDepth,
-                      int swapDepth,
-                      vector<vector<int>>& results) {
+                      int swapDepth) {
     
     if( node == -1)
         return;
     
-    swapRecursive( indexes, indexes[node - 1][ LEFT], curDepth + 1, swapDepth, results);
-    if( swapDepth % curDepth == 0){
-        
-        std::cout << "need to swap, "
-            << "node: " << node 
-            << ", curDepth: " << curDepth << std::endl;
-        
-        std::cout << "indexes before: " << std::endl;
-        print( indexes);
-        vector<int> res;
-        std::cout << "traverse before: ";
-        inOrderTraverse( indexes, 1, 1, res);
-        print_vec( res);
-        
+    swapRecursive( indexes, indexes[node - 1][ LEFT], curDepth + 1, swapDepth);
+    swapRecursive( indexes, indexes[node - 1][ RIGHT], curDepth + 1, swapDepth);
+    if( curDepth % swapDepth == 0){
         int temp = indexes[node - 1][ LEFT];
         indexes[node - 1][ LEFT] = indexes[node - 1][ RIGHT];
         indexes[node - 1][ RIGHT] = temp;
-        vector<int> result;
-        inOrderTraverse( indexes, 1, 1, result);
-        results.push_back( result);
-        std::cout << "indexes after: " << std::endl;
-        print( indexes);
-        std::cout << "traverse after: ";
-        print_vec( res);
-        std::cout << std::endl;
-        
     }
-    swapRecursive( indexes, indexes[node - 1][ RIGHT], curDepth + 1, swapDepth, results);
 }
 
 vector<vector<int>> swapNodes(vector<vector<int>> indexes, vector<int> queries) {
     vector<vector<int>> results;
     for( int i = 0; i < queries.size(); i++){
-        swapRecursive( indexes, 1, 1, queries[i], results);
+        swapRecursive( indexes, 1, 1, queries[i]);
+        vector<int> result;
+        inOrderTraverse( indexes, 1, 1, result);
+        results.push_back( result);
     }
     
     return results;
 }
+
 
 int main()
 {
