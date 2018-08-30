@@ -1,43 +1,43 @@
 #include <bits/stdc++.h>
 
-#include <set>
 using namespace std;
 
 vector<string> split_string(string);
 
 // Complete the triplets function below.
 long triplets(vector<int> a, vector<int> b, vector<int> c) {
-    
-    set<int> setA;
-    set<int> setB;
-    set<int> setC;
-    for( int i = 0; i < a.size(); i++){
-        setA.insert( a[ i]);  
-    }
-    for( int j = 0; j < b.size(); j++){
-        setB.insert( b[ j]);  
-    }
-    for( int k = 0; k < c.size(); k++){
-        setC.insert( c[ k]);  
-    }
+    sort( a.begin(), a.end());
+    sort( b.begin(), b.end());
+    sort( c.begin(), c.end());
     
     long res = 0;
-    for( auto itB = setB.begin(); itB != setB.end(); ++itB){
-        long aCount = 0;
-        auto itA = setA.begin();
-        while( itA != setA.end() && *itA <= *itB){
-            aCount += 1;
-            itA++;
+    int prevB = -1;
+    for( int i = 0; i < b.size(); i++){
+        if( b[i] == prevB)
+            continue;
+        
+        long aInd = 0;
+        int prevA = -1;
+        while( aInd != a.size() && a[aInd] <= b[i]){
+            if( a[aInd] == prevA)
+                continue;
+            
+            prevA = a[aInd];
+            aInd += 1;
         }
         
-        long cCount = 0;
-        auto itC = setC.begin();
-        while( itC != setC.end() && *itC <= *itB){
-            cCount += 1;
-            itC++;
+        long cInd = 0;
+        int prevC = -1;
+        while( cInd != c.size() && c[cInd] <= b[i]){
+            if( c[cInd] == prevC)
+                continue;
+            
+            prevC = c[cInd];
+            cInd += 1;
         }
         
-        res += aCount * cCount;
+        res += aInd * cInd;
+        prevB = b[i];
     }
     
     return res;
