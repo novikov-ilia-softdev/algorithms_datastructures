@@ -22,18 +22,22 @@ long triplets(vector<int> a, vector<int> b, vector<int> c) {
     }
     
     long res = 0;
-    //std::cout << "iterate:" << std::endl;
-    for( auto itA = setA.begin(); itA != setA.end(); ++itA){
-        //std::cout << *itA << std::endl;
-        for( auto itB = setB.begin(); itB != setB.end(); ++itB){
-            //std::cout << *itB << std::endl;
-            for( auto itC = setC.begin(); itC != setC.end(); ++itC){
-                //std::cout << *itC << std::endl;
-                if( *itA <= *itB && *itB >= *itC){
-                    res++;
-                }    
-            }
+    for( auto itB = setB.begin(); itB != setB.end(); ++itB){
+        long aCount = 0;
+        auto itA = setA.begin();
+        while( itA != setA.end() && *itA <= *itB){
+            aCount += 1;
+            itA++;
         }
+        
+        long cCount = 0;
+        auto itC = setC.begin();
+        while( itC != setC.end() && *itC <= *itB){
+            cCount += 1;
+            itC++;
+        }
+        
+        res += aCount * cCount;
     }
     
     return res;
