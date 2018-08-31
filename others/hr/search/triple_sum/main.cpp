@@ -4,40 +4,29 @@ using namespace std;
 
 vector<string> split_string(string);
 
-// Complete the triplets function below.
 long triplets(vector<int> a, vector<int> b, vector<int> c) {
     sort( a.begin(), a.end());
     sort( b.begin(), b.end());
     sort( c.begin(), c.end());
     
+    a.erase( unique( a.begin(), a.end()), a.end());
+    b.erase( unique( b.begin(), b.end()), b.end());
+    c.erase( unique( c.begin(), c.end()), c.end());
+    
     long res = 0;
-    int prevB = -1;
+    int aInd = 0;
+    int cInd = 0;
+    
     for( int i = 0; i < b.size(); i++){
-        if( b[i] == prevB)
-            continue;
-        
-        long aInd = 0;
-        int prevA = -1;
         while( aInd != a.size() && a[aInd] <= b[i]){
-            if( a[aInd] == prevA)
-                continue;
-            
-            prevA = a[aInd];
-            aInd += 1;
+            aInd++;
         }
         
-        long cInd = 0;
-        int prevC = -1;
-        while( cInd != c.size() && c[cInd] <= b[i]){
-            if( c[cInd] == prevC)
-                continue;
-            
-            prevC = c[cInd];
-            cInd += 1;
+        while( cInd != c.size() && c[cInd] <= b[i]){ 
+            cInd++;
         }
         
-        res += aInd * cInd;
-        prevB = b[i];
+        res += (long)aInd * (long)cInd;
     }
     
     return res;
