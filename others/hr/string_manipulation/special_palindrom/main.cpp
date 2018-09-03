@@ -2,11 +2,28 @@
 
 using namespace std;
 
+void print( const map<string, bool> m){
+    cout << "cache" << endl;
+    for( auto it = m.begin(); it != m.end(); it++){
+        cout << it->first << ": " << it->second << endl;
+    }
+    
+}
+
 bool isSpecialPalindrom( const std::string& s){
     //cout << "isSpecialPalindrom: " << s << ", ";
+    static map<string, bool> isStrSpecPalindromMap;
     
+    auto it = isStrSpecPalindromMap.find( s);
+    if( it != isStrSpecPalindromMap.end()){
+        //cout << "from cache " << it->second << endl;
+        return it->second;
+    }
+        
     if( s.length() == 1){
         //cout << "true" << endl;
+        isStrSpecPalindromMap.insert( pair<string,bool>(s, true));
+        //print( isStrSpecPalindromMap);
         return true;
     }
         
@@ -20,12 +37,16 @@ bool isSpecialPalindrom( const std::string& s){
 
         if( s[i] != firstCh){
             //cout << "false" << endl;
+            isStrSpecPalindromMap.insert( pair<string,bool>(s, false));
+            //print( isStrSpecPalindromMap);
             return false;
         }
             
     }
     
     //cout << "true" << endl;
+    isStrSpecPalindromMap.insert( pair<string,bool>(s, true));
+    //print( isStrSpecPalindromMap);
     return true;
 }
 
