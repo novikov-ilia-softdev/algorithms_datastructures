@@ -5,39 +5,21 @@ using namespace std;
 
 vector<string> split_string(string);
 
-int recursiveCountSuperDigit(const string& s) {
-    static map<string, int> m;
-    auto it = m.find( s);
-    if( it != m.end())
-        return it->second;
-    
+int superDigit(string s, int k) {    
     if( s.length() == 1)
         return stoi( s);
     
     vector<int> digits;
     for(int i = 0; i < s.length(); i++){   
         char ch = s[i];
-        digits.push_back( atoi(&ch));  
+        digits.push_back( atoi(&ch)); 
     }
     
-    int sum = 0;
-    for(int i = 0; i < digits.size(); i++){
-        sum += digits[ i];
-    }
+    long sum = 0;
+    for_each( digits.begin(), digits.end(), [ &sum](int &n){ sum += n; });
+    sum *= k;
     
-    string str = to_string(sum);
-    int res = recursiveCountSuperDigit( str);
-    m.insert( pair<string, int>(str, res));
-    return res;
-}
-
-int superDigit(string n, int k) {
-    string wholeNumber;
-    for( int i = 0; i < k; i++){
-        wholeNumber += n;
-    }
-    
-    return recursiveCountSuperDigit( wholeNumber);
+    return superDigit( to_string( sum), 1);
 }
 
 int main()
