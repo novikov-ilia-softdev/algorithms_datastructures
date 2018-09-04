@@ -4,19 +4,38 @@ using namespace std;
 
 vector<string> split_string(string);
 
-long minTime(vector<long> machines, long goal) {
-    long doneWork = 0;
-    long curDay = 0;
+long BSTime(const vector<long>& machines, long goal,
+            long minPossibleTime, long maxPossibleTime) {
     
-    while( doneWork < goal){
-        curDay++;
-        for( int i = 0; i < machines.size(); i++){
-            if( curDay % machines[ i] == 0)
-                doneWork += 1;
-        }
+    cout << "BSTime, minPossibleTime: " << minPossibleTime 
+         << ", maxPossibleTime: " << maxPossibleTime << endl;
+    
+    long doneWork = 0;
+    long curDay = (maxPossibleTime - minPossibleTime) / 2 + minPossibleTime;
+    cout << "curDay: " << curDay << endl;
+    
+    for( int i = 0; i < machines.size(); i++){
+        doneWork += (curDay / machines[i]);
     }
     
-    return curDay;
+    cout << "doneWork: " << doneWork << ", goal: " << goal << endl;
+    
+    if( doneWork == goal){
+        cout << "result: " << curDay << endl;
+        return curDay;
+    }
+        
+    if( doneWork < goal)
+        return BSTime( machines, goal, curDay + 1, maxPossibleTime);
+    
+    return BSTime( machines, goal, minPossibleTime, curDay);
+}
+
+long minTime(vector<long> machines, long goal) {
+    sort( machines.begin(), machines.end());
+    long minPossibleTime = goal * machines[ 0] / machines.size();
+    long maxPossibleTime = goal * machines[ machines.size() - 1] / machines.size();
+    return BSTime( machines, goal, minPossibleTime, maxPossibleTime);
 }
 
 int main()
