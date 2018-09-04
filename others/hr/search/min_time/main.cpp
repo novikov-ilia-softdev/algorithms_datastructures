@@ -9,10 +9,10 @@ long minTime(vector<long> machines, long goal) {
     long curDay = 0;
     
     while( doneWork < goal){
-        doneWork = 0;
         curDay++;
         for( int i = 0; i < machines.size(); i++){
-            doneWork += curDay / machines[ i];
+            if( curDay % machines[ i] == 0)
+                doneWork += 1;
         }
     }
     
