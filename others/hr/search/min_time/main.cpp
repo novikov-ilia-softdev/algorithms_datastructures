@@ -7,21 +7,23 @@ vector<string> split_string(string);
 long BSTime(const vector<long>& machines, long goal,
             long minPossibleTime, long maxPossibleTime) {
     
-    cout << "BSTime, minPossibleTime: " << minPossibleTime 
-         << ", maxPossibleTime: " << maxPossibleTime << endl;
-    
     long doneWork = 0;
     long curDay = (maxPossibleTime - minPossibleTime) / 2 + minPossibleTime;
-    cout << "curDay: " << curDay << endl;
     
     for( int i = 0; i < machines.size(); i++){
         doneWork += (curDay / machines[i]);
     }
     
-    cout << "doneWork: " << doneWork << ", goal: " << goal << endl;
-    
-    if( doneWork == goal){
-        cout << "result: " << curDay << endl;
+    if( maxPossibleTime == minPossibleTime){
+        long tempDoneWork = doneWork;
+        while( tempDoneWork >= goal && curDay > 0){
+            tempDoneWork = 0;
+            for( int i = 0; i < machines.size(); i++){
+                tempDoneWork += ((curDay - 1) / machines[i]);
+            }
+            if( tempDoneWork >= goal)
+                curDay--;
+        }
         return curDay;
     }
         
