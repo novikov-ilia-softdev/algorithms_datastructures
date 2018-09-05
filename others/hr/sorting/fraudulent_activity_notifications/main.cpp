@@ -12,9 +12,16 @@ void print( const vector<int>& v){
 }
 
 float median( const vector<int>& v, int startIndex, int stopIndex){
-    vector<int> temp;
-    for( int i = startIndex; i <= stopIndex; i++){
-        temp.push_back( v[i]);
+    static vector<int> temp;
+    
+    if( temp.empty()){
+        for( int i = startIndex; i <= stopIndex; i++){
+            temp.push_back( v[i]);
+        }
+    }
+    else{
+        temp.erase(temp.begin());
+        temp.push_back( v[stopIndex]);
     }
     
     sort( temp.begin(), temp.end());
