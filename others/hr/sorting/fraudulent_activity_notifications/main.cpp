@@ -4,43 +4,61 @@ using namespace std;
 
 vector<string> split_string(string);
 
-void print( const vector<int>& v){
-    for(int i = 0; i < v.size(); i++){
-        cout << v[ i] << " ";
+void push( priority_queue<int, vector<int>, greater<int>>& upper,
+           priority_queue<int, vector<int>, less<int>>& lower,
+           int val){
+    
+    // push
+    if( val >= upper.top())
+        upper.push( val);
+    else
+        lower.push( val);
+    
+    // rebalance
+    if( upper.size() - lower.size() == 2){
+        lower.push( upper.top());
+        upper.pop();
     }
-    cout << endl;
+    else if( lower.size() - upper.size() == 2){
+        upper.push( lower.top());
+        lower.pop();
+    }
 }
 
-float median( const vector<int>& v, int startIndex, int stopIndex){
-    static vector<int> temp;
-    
-    if( temp.empty()){
-        for( int i = startIndex; i <= stopIndex; i++){
-            temp.push_back( v[i]);
-        }
-    }
-    else{
-        temp.erase(temp.begin());
-        temp.push_back( v[stopIndex]);
-    }
-    
-    sort( temp.begin(), temp.end());
-    //print(temp);
-    
-    if( temp.size() % 2 == 1)
-        return temp[ temp.size() / 2];
-    
-    return (temp[ temp.size() / 2] + temp[ temp.size() / 2 - 1]) / 2.0;
+float median( priority_queue<int, vector<int>, greater<int>>& upper,
+              priority_queue<int, vector<int>, less<int>>& lower){
+
+    if( upper.size() == lower.size())
+        return (upper.top() + lower.top()) / 2.0;
+    if( upper.size() > lower.size())
+        return upper.top();
+    return lower.top();
 }
 
 int activityNotifications(vector<int> expenditure, int d) {
     int result = 0;
-    for( int i = d; i < expenditure.size(); i++){
-       //cout << "i: " << i << " = " << expenditure[i] << endl;
-       float med = median( expenditure, i - d, i - 1);
-       //cout << "med: " << med << endl;
+    
+    priority_queue<int, vector<int>, greater<int>> upper;
+    priority_queue<int, vector<int>, less<int>> lower;
+    upper.push( numeric_limits<int>::max());
+    lower.push( numeric_limits<int>::min());
+    
+    for( int i = 0; i < expenditure.size(); i++){
+       cout << endl << "i: " << i << " = " << expenditure[i] << endl;
+        
+       if( lower.size() + upper.size() < d + 2){
+           cout << "continue" << endl;
+           push( upper, lower, expenditure[i]);
+           continue;
+       }
+            
+       float med = median( upper, lower);
+       cout << "med: " << med << endl;
+           
        if( expenditure[i] >= 2 * med)
            result++;
+        
+       push( upper, lower, expenditure[i]);
     }
     
     return result;
