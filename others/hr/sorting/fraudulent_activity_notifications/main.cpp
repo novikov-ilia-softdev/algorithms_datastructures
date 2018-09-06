@@ -27,60 +27,69 @@ void push( multiset<int, less<int>>& upper,
            multiset<int, greater<int>>& lower,
            int val, int capacity){
     
-    /*if( upper.empty()){
-        upper.insert( val);
-        return;
-    }*/
+    static queue<int> q;
     
-    static int valToDelete;
-    if( (upper.size() + lower.size()) / capacity == 1 )
-        valToDelete = val;
+    if( upper.size() + lower.size() == capacity)
+    {
+    int valToDelete = q.front();
+    q.pop();
+    auto it1 = upper.find( valToDelete);
+    if( it1 != upper.end()){
+        upper.erase( it1);
+    }
+    else{
+        auto it2 = lower.find( valToDelete);
+        if( it2 != lower.end()){
+        lower.erase( it2);
+        }
+    }
+    }
     
-    cout << "before push " << val << ", capacity: " << capacity << endl;
-    printUpper( upper);
-    printLower( lower); 
+    // rebalance
+    if( upper.size() - lower.size() == 2){
+        //cout << "rebalance upper to lower" << endl;
+        lower.insert( *upper.begin());
+        upper.erase( upper.begin());
+        
+    }
+    else if( lower.size() - upper.size() == 2){
+        //cout << "rebalance lower to upper" << endl;
+        upper.insert( *lower.begin());
+        lower.erase(lower.begin());
+    }
+    
+    q.push( val);
     
     // push
     if( val >= *upper.begin()){
-        cout << "push to upper" << endl;
-        if( upper.size() + lower.size() == capacity)
-        {
-            cout << "cutting upper" << endl;
-            //upper.erase( prev(upper.end()));
-            upper.erase( upper.begin());
-            
-        }
+        //cout << "push to upper" << endl;
         upper.insert( val);
     }
         
     else{
-        if( upper.size() + lower.size() == capacity)
-        {
-            cout << "cutting lower" << endl;
-            lower.erase( lower.begin());
-        }
-        cout << "push to lower" << endl;
+        
+        //cout << "push to lower" << endl;
         lower.insert( val);
     }
     
     
     // rebalance
     if( upper.size() - lower.size() == 2){
-        cout << "rebalance upper to lower" << endl;
+        //cout << "rebalance upper to lower" << endl;
         lower.insert( *upper.begin());
         upper.erase( upper.begin());
         
     }
     else if( lower.size() - upper.size() == 2){
-        cout << "rebalance lower to upper" << endl;
+        //cout << "rebalance lower to upper" << endl;
         upper.insert( *lower.begin());
         lower.erase(lower.begin());
     }
     
-    cout << "after push " << val << ", capacity: " << capacity << endl;
-    printUpper( upper);
-    printLower( lower);
-    cout << endl;
+    //cout << "after push " << val << ", capacity: " << capacity << endl;
+    //printUpper( upper);
+    //printLower( lower);
+    //cout << endl;
 }
 
 float median( multiset<int, less<int>>& upper,
@@ -121,7 +130,7 @@ int activityNotifications(vector<int> expenditure, int d) {
        push( upper, lower, expenditure[i], d);
     }
     
-    cout << result << endl;
+    //cout << result << endl;
     
     return result;
 }
@@ -129,10 +138,9 @@ int activityNotifications(vector<int> expenditure, int d) {
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input07.txt");
 
     string nd_temp;
-    getline(fin, nd_temp);
+    getline(cin, nd_temp);
 
     vector<string> nd = split_string(nd_temp);
 
@@ -141,7 +149,7 @@ int main()
     int d = stoi(nd[1]);
 
     string expenditure_temp_temp;
-    getline(fin, expenditure_temp_temp);
+    getline(cin, expenditure_temp_temp);
 
     vector<string> expenditure_temp = split_string(expenditure_temp_temp);
 
