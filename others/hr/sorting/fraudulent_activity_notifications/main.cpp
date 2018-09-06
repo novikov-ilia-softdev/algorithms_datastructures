@@ -4,62 +4,124 @@ using namespace std;
 
 vector<string> split_string(string);
 
-void push( priority_queue<int, vector<int>, greater<int>>& upper,
-           priority_queue<int, vector<int>, less<int>>& lower,
-           int val){
+void printUpper( multiset<int, less<int>>& ms)
+{
+    cout << "upper: ";
+    for( auto it = ms.begin(); it != ms.end(); it++){
+        cout << *it << " ";
+    }
+    cout << endl;
+    //cout << endl;
+}
+
+void printLower( multiset<int, greater<int>>& ms)
+{
+    cout << "lower: ";
+    for( auto it = ms.begin(); it != ms.end(); it++){
+        cout << *it << " ";
+    }
+    cout << endl;
+}
+
+void push( multiset<int, less<int>>& upper,
+           multiset<int, greater<int>>& lower,
+           int val, int capacity){
+    
+    /*if( upper.empty()){
+        upper.insert( val);
+        return;
+    }*/
+    
+    static int valToDelete;
+    if( (upper.size() + lower.size()) / capacity == 1 )
+        valToDelete = val;
+    
+    cout << "before push " << val << ", capacity: " << capacity << endl;
+    printUpper( upper);
+    printLower( lower); 
     
     // push
-    if( val >= upper.top())
-        upper.push( val);
-    else
-        lower.push( val);
+    if( val >= *upper.begin()){
+        cout << "push to upper" << endl;
+        if( upper.size() + lower.size() == capacity)
+        {
+            cout << "cutting upper" << endl;
+            //upper.erase( prev(upper.end()));
+            upper.erase( upper.begin());
+            
+        }
+        upper.insert( val);
+    }
+        
+    else{
+        if( upper.size() + lower.size() == capacity)
+        {
+            cout << "cutting lower" << endl;
+            lower.erase( lower.begin());
+        }
+        cout << "push to lower" << endl;
+        lower.insert( val);
+    }
+    
     
     // rebalance
     if( upper.size() - lower.size() == 2){
-        lower.push( upper.top());
-        upper.pop();
+        cout << "rebalance upper to lower" << endl;
+        lower.insert( *upper.begin());
+        upper.erase( upper.begin());
+        
     }
     else if( lower.size() - upper.size() == 2){
-        upper.push( lower.top());
-        lower.pop();
+        cout << "rebalance lower to upper" << endl;
+        upper.insert( *lower.begin());
+        lower.erase(lower.begin());
     }
+    
+    cout << "after push " << val << ", capacity: " << capacity << endl;
+    printUpper( upper);
+    printLower( lower);
+    cout << endl;
 }
 
-float median( priority_queue<int, vector<int>, greater<int>>& upper,
-              priority_queue<int, vector<int>, less<int>>& lower){
+float median( multiset<int, less<int>>& upper,
+              multiset<int, greater<int>>& lower){
 
     if( upper.size() == lower.size())
-        return (upper.top() + lower.top()) / 2.0;
+        return (*upper.begin() + *lower.begin()) / 2.0;
+    
     if( upper.size() > lower.size())
-        return upper.top();
-    return lower.top();
+        return *upper.begin();
+    
+    return *lower.begin();
 }
 
 int activityNotifications(vector<int> expenditure, int d) {
     int result = 0;
     
-    priority_queue<int, vector<int>, greater<int>> upper;
-    priority_queue<int, vector<int>, less<int>> lower;
-    upper.push( numeric_limits<int>::max());
-    lower.push( numeric_limits<int>::min());
+    multiset<int, less<int>> upper;
+    multiset<int, greater<int>> lower;
     
     for( int i = 0; i < expenditure.size(); i++){
-       cout << endl << "i: " << i << " = " << expenditure[i] << endl;
-        
-       if( lower.size() + upper.size() < d + 2){
-           cout << "continue" << endl;
-           push( upper, lower, expenditure[i]);
+       //cout << endl << "i: " << i << " = " << expenditure[i] << endl;
+       //printUpper( upper);
+       //printLower( lower); 
+       
+       if( lower.size() + upper.size() < d){
+           //cout << "continue" << endl;
+           push( upper, lower, expenditure[i], d);
            continue;
        }
             
        float med = median( upper, lower);
-       cout << "med: " << med << endl;
+       //cout << "med: " << med << endl;
            
        if( expenditure[i] >= 2 * med)
            result++;
         
-       push( upper, lower, expenditure[i]);
+       push( upper, lower, expenditure[i], d);
     }
+    
+    cout << result << endl;
     
     return result;
 }
@@ -67,9 +129,10 @@ int activityNotifications(vector<int> expenditure, int d) {
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
+    ifstream fin("input07.txt");
 
     string nd_temp;
-    getline(cin, nd_temp);
+    getline(fin, nd_temp);
 
     vector<string> nd = split_string(nd_temp);
 
@@ -78,7 +141,7 @@ int main()
     int d = stoi(nd[1]);
 
     string expenditure_temp_temp;
-    getline(cin, expenditure_temp_temp);
+    getline(fin, expenditure_temp_temp);
 
     vector<string> expenditure_temp = split_string(expenditure_temp_temp);
 
