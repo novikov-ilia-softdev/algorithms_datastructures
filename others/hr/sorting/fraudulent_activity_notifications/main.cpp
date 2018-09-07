@@ -4,84 +4,89 @@ using namespace std;
 
 vector<string> split_string(string);
 
-void push( multiset<int, less<int>>& upper,
-           multiset<int, greater<int>>& lower,
-           int val, int capacity){
+class RunningMedian{
+public:
+    RunningMedian( int c);
+    void push( int val);
+    float getMedian() const;
+    int getSize() const;
     
-    static queue<int> q;
-    
-    if( upper.size() + lower.size() == capacity)
+private:
+    int _capacity;
+    void _rebalance();
+    multiset<int, less<int>> _upper;
+    multiset<int, greater<int>> _lower;
+    queue<int> _q;
+};
+
+RunningMedian::RunningMedian( int c): 
+    _capacity( c) {}
+
+void RunningMedian::push( int val){
+    if( getSize() == _capacity)
     {
-        int valToDelete = q.front();
-        q.pop();
-        auto it1 = upper.find( valToDelete);
-        if( it1 != upper.end())
-            upper.erase( it1);
+        int valToDelete = _q.front();
+        _q.pop();
+        auto it1 = _upper.find( valToDelete);
+        if( it1 != _upper.end())
+            _upper.erase( it1);
         else{
-            auto it2 = lower.find( valToDelete);
-            if( it2 != lower.end())
-                lower.erase( it2);
+            auto it2 = _lower.find( valToDelete);
+            if( it2 != _lower.end())
+                _lower.erase( it2);
         }
     }
     
-    // rebalance
-    if( upper.size() - lower.size() == 2){
-        lower.insert( *upper.begin());
-        upper.erase( upper.begin());
-        
-    }
-    else if( lower.size() - upper.size() == 2){
-        upper.insert( *lower.begin());
-        lower.erase(lower.begin());
-    }
+    _rebalance();
+    _q.push( val);
     
-    q.push( val);
-    
-    // push
-    if( val >= *upper.begin())
-        upper.insert( val);
+    if( val >= *_upper.begin())
+        _upper.insert( val);
     else
-        lower.insert( val);
+        _lower.insert( val);
     
-    
-    // rebalance
-    if( upper.size() - lower.size() == 2){
-        lower.insert( *upper.begin());
-        upper.erase( upper.begin());
-        
-    }
-    else if( lower.size() - upper.size() == 2){
-        upper.insert( *lower.begin());
-        lower.erase(lower.begin());
-    }
+    _rebalance();
 }
 
-float median( multiset<int, less<int>>& upper,
-              multiset<int, greater<int>>& lower){
+float RunningMedian::getMedian() const{
+    if( _upper.size() == _lower.size())
+        return (*_upper.begin() + *_lower.begin()) / 2.0;
 
-    if( upper.size() == lower.size())
-        return (*upper.begin() + *lower.begin()) / 2.0;
-    
-    if( upper.size() > lower.size())
-        return *upper.begin();
-    
-    return *lower.begin();
+    if( _upper.size() > _lower.size())
+        return *_upper.begin();
+
+    return *_lower.begin();
+}
+
+int RunningMedian::getSize() const{
+    return _upper.size() + _lower.size();
+}
+
+void RunningMedian::_rebalance(){
+    if( _upper.size() - _lower.size() == 2){
+        _lower.insert( *_upper.begin());
+        _upper.erase( _upper.begin());
+        
+    }
+    else if( _lower.size() - _upper.size() == 2){
+        _upper.insert( *_lower.begin());
+        _lower.erase(_lower.begin());
+    }
 }
 
 int activityNotifications(vector<int> expenditure, int d) {
     int result = 0;
-    multiset<int, less<int>> upper;
-    multiset<int, greater<int>> lower;
+    RunningMedian runningMedian( d);
     
     for( int i = 0; i < expenditure.size(); i++){
-       if( lower.size() + upper.size() < d){
-           push( upper, lower, expenditure[i], d);
+       if( runningMedian.getSize() < d){
+           runningMedian.push( expenditure[i]);
            continue;
        }   
-       if( expenditure[i] >= 2 * median( upper, lower))
+       if( expenditure[i] >= 2 * runningMedian.getMedian())
            result++;
         
-       push( upper, lower, expenditure[i], d);
+       runningMedian.push( expenditure[i]);
     }
     
     return result;
