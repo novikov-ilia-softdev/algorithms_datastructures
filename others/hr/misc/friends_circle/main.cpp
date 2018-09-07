@@ -19,6 +19,7 @@ void printSets( const vector<set<int>>& sets){
 vector<int> maxCircle(vector<vector<int>> queries) {
     vector<int> result;
     vector<set<int>> sets;
+    map<int,int> m;
     int maxSize = 0;
     for( int i = 0; i < queries.size(); i++){
         int first = queries[ i][ 0];
@@ -27,72 +28,53 @@ vector<int> maxCircle(vector<vector<int>> queries) {
         int firstSetIndex = -1;
         int secondSetIndex = -1;
         
-        for( int j = 0; j < sets.size(); j++){
-            auto tempFirstIt = sets[ j].find( first);
-            if( tempFirstIt != sets[ j].end())
-                firstSetIndex = j;
-            
-            auto tempSecondIt = sets[ j].find( second);
-            if( tempSecondIt != sets[ j].end())
-                secondSetIndex = j;
-            
-            if( firstSetIndex != -1 && secondSetIndex != -1)
-                break;
-        }
-        
-        //cout << "WOW1" << endl;
+	auto it1 = m.find( first);
+	if( it1 != m.end())
+	    firstSetIndex = it1->second;
+	
+	auto it2 = m.find( second);
+	if( it2 != m.end())
+	    secondSetIndex = it2->second;
         
         if( firstSetIndex == secondSetIndex && firstSetIndex != -1 && secondSetIndex != -1){
-            //cout << "WOW2" << endl;
         }
         
         else if( firstSetIndex == -1 && secondSetIndex == -1){
-            //cout << "WOW3" << endl;
             set<int> s;
             s.insert( first);
             s.insert( second);
-            //cout << "s.size(): " << s.size() << endl;
-            //cout << "maxSize: " << maxSize << endl;
-            //cout << "s.size() > maxSize: " << (s.size() > maxSize) << endl;
-            if( s.size() > maxSize){
-                
-                //cout << "WOW!!!!!!!!!!!" << endl;
+            if( s.size() > maxSize)
                 maxSize = s.size();
-            }
                 
             sets.push_back( s);
+	    m[ first] = sets.size() - 1;
+	    m[ second] = sets.size() - 1;
         }
         
         else if( firstSetIndex != -1 && secondSetIndex == -1){
-            //cout << "WOW4" << endl;
             sets[ firstSetIndex].insert( second);
+	    m[ second] = firstSetIndex;
             if( sets[ firstSetIndex].size() > maxSize)
                 maxSize = sets[ firstSetIndex].size();
         }
         
         else if( firstSetIndex == -1 && secondSetIndex != -1){
-            //cout << "WOW5" << endl;
             sets[ secondSetIndex].insert( first);
+	    m[ first] = secondSetIndex;
             if( sets[ secondSetIndex].size() > maxSize)
                 maxSize = sets[ secondSetIndex].size();
         }
         
         else{
-            //cout << "WOW6" << endl;
             for( auto it = sets[secondSetIndex].begin(); it != sets[secondSetIndex].end(); it++){
                 sets[firstSetIndex].insert( *it);
+		m[*it] = firstSetIndex;
             }
             
             if( sets[ firstSetIndex].size() > maxSize)
                 maxSize = sets[ firstSetIndex].size();
             
-            sets.erase( sets.begin() + secondSetIndex);
-	    //cout << "s.size(): " << sets[firstSetIndex].size() << endl;
-            //cout << "maxSize: " << maxSize << endl;
-            //cout << "sets[firstSetIndex].size() > maxSize: " << (sets[firstSetIndex].size() > maxSize) << endl;
-            //if( sets[ firstSetIndex].size() + sets[ secondSetIndex].size() > maxSize)
-            //    maxSize = sets[ firstSetIndex].size() + sets[ secondSetIndex].size();
-            
+            //sets.erase( sets.begin() + secondSetIndex);
         }
         
         //cout << first << "-" << second << endl;
