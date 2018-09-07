@@ -32,6 +32,7 @@ int getMaxSet( const vector<set<int>>& sets){
 vector<int> maxCircle(vector<vector<int>> queries) {
     vector<int> result;
     vector<set<int>> sets;
+    int maxSize = -1;
     for( int i = 0; i < queries.size(); i++){
         int first = queries[ i][ 0];
         int second = queries[ i][ 1];
@@ -47,39 +48,64 @@ vector<int> maxCircle(vector<vector<int>> queries) {
             auto tempSecondIt = sets[ j].find( second);
             if( tempSecondIt != sets[ j].end())
                 secondSetIndex = j;
+            
+            if( firstSetIndex != -1 && secondSetIndex != -1)
+                break;
         }
         
+        cout << "WOW1" << endl;
+        
         if( firstSetIndex == secondSetIndex && firstSetIndex != -1 && secondSetIndex != -1){
-            
+            cout << "WOW2" << endl;
         }
         
         else if( firstSetIndex == -1 && secondSetIndex == -1){
+            cout << "WOW3" << endl;
             set<int> s;
             s.insert( first);
             s.insert( second);
+            cout << "s.size(): " << s.size() << endl;
+            cout << "maxSize: " << maxSize << endl;
+            cout << "s.size() > maxSize: " << (s.size() > maxSize) << endl;
+            if( s.size() > maxSize){
+                
+                cout << "WOW!!!!!!!!!!!" << endl;
+                maxSize = s.size();
+            }
+                
             sets.push_back( s);
         }
         
         else if( firstSetIndex != -1 && secondSetIndex == -1){
+            cout << "WOW4" << endl;
             sets[ firstSetIndex].insert( second);
+            if( sets[ firstSetIndex].size() > maxSize)
+                maxSize = sets[ firstSetIndex].size();
         }
         
         else if( firstSetIndex == -1 && secondSetIndex != -1){
+            cout << "WOW5" << endl;
             sets[ secondSetIndex].insert( first);
+            if( sets[ secondSetIndex].size() > maxSize)
+                maxSize = sets[ secondSetIndex].size();
         }
         
         else{
+            cout << "WOW6" << endl;
             for( auto it = sets[secondSetIndex].begin(); it != sets[secondSetIndex].end(); it++){
                 sets[firstSetIndex].insert( *it);
             }
             sets.erase( sets.begin() + secondSetIndex);
+            if( sets[ firstSetIndex].size() > maxSize)
+                maxSize = sets[ firstSetIndex].size();
+            
         }
         
-        //cout << first << "-" << second << endl;
-        //printSets( sets);
-        int max = getMaxSet( sets);
-        //cout << "max: " << max << endl << endl;
-        result.push_back( max);
+        cout << first << " <-> " << second << endl;
+        printSets( sets);
+        //int max = getMaxSet( sets);
+        cout << "max: " << maxSize << endl << endl;
+        result.push_back( maxSize);
     }
     
     /*for( int i = 0; i < result.size(); i++){
@@ -92,7 +118,7 @@ vector<int> maxCircle(vector<vector<int>> queries) {
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input03.txt");
+    ifstream fin("input00.txt");
 
     int q;
     fin >> q;
