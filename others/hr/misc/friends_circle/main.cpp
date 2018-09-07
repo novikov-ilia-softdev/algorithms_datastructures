@@ -2,6 +2,20 @@
 
 using namespace std;
 
+void printSet( const set<int>& s){
+    cout << "[ ";
+    for( auto it = s.begin(); it != s.end(); it++){
+        cout << *it << ",";
+    }
+    cout << "]" << endl;
+}
+
+void printSets( const vector<set<int>>& sets){
+    for( int i = 0; i < sets.size(); i++){
+        printSet( sets[i]);
+    }
+}
+
 int getMaxSet( const vector<set<int>>& sets){
     int maxSizeIndex = 0;
     if( sets.size() == 1)
@@ -35,7 +49,11 @@ vector<int> maxCircle(vector<vector<int>> queries) {
                 secondSetIndex = j;
         }
         
-        if( firstSetIndex == -1 && secondSetIndex == -1){
+        if( firstSetIndex == secondSetIndex && firstSetIndex != -1 && secondSetIndex != -1){
+            
+        }
+        
+        else if( firstSetIndex == -1 && secondSetIndex == -1){
             set<int> s;
             s.insert( first);
             s.insert( second);
@@ -57,8 +75,16 @@ vector<int> maxCircle(vector<vector<int>> queries) {
             sets.erase( sets.begin() + secondSetIndex);
         }
         
-        result.push_back( getMaxSet( sets));
+        //cout << first << "-" << second << endl;
+        //printSets( sets);
+        int max = getMaxSet( sets);
+        //cout << "max: " << max << endl << endl;
+        result.push_back( max);
     }
+    
+    /*for( int i = 0; i < result.size(); i++){
+        cout << result[ i] << endl;
+    }*/
     
     return result;
 }
@@ -66,20 +92,21 @@ vector<int> maxCircle(vector<vector<int>> queries) {
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
+    ifstream fin("input03.txt");
 
     int q;
-    cin >> q;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    fin >> q;
+    fin.ignore(numeric_limits<streamsize>::max(), '\n');
 
     vector<vector<int>> queries(q);
     for (int i = 0; i < q; i++) {
         queries[i].resize(2);
 
         for (int j = 0; j < 2; j++) {
-            cin >> queries[i][j];
+            fin >> queries[i][j];
         }
 
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        fin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 
     vector<int> ans = maxCircle(queries);
