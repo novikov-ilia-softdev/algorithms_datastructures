@@ -2,84 +2,90 @@
 
 using namespace std;
 
-void printSet( const set<int>& s){
-    cout << "[ ";
-    for( auto it = s.begin(); it != s.end(); it++){
-        cout << *it << ",";
+void print( const map<int,int>& m){
+    //cout << "[ ";
+    for( auto it = m.begin(); it != m.end(); it++){
+        cout << it->first << "," << it->second << endl;
     }
-    cout << "]" << endl;
 }
 
-void printSets( const vector<set<int>>& sets){
-    for( int i = 0; i < sets.size(); i++){
-        printSet( sets[i]);
+int getParent( const map<int,int>& m, int val){
+    auto it = m.find( val);
+    if( it == m.end()){
+	return -1;
+    }
+    else{
+	while( it->first != it->second){
+	    it = m.find( it->second);
+	}
+	return it->second;
     }
 }
 
 vector<int> maxCircle(vector<vector<int>> queries) {
     vector<int> result;
-    vector<set<int>> sets;
-    map<int,int> m;
+    map<int,int> valOnParentMap;
+    map<int,int> parentOnSizeMap;
     int maxSize = 0;
     for( int i = 0; i < queries.size(); i++){
         int first = queries[ i][ 0];
         int second = queries[ i][ 1];
         
-        int firstSetIndex = -1;
-        int secondSetIndex = -1;
+        int firstParent = getParent( valOnParentMap, first);
+        int secondParent = getParent( valOnParentMap, second);
         
-	auto it1 = m.find( first);
-	if( it1 != m.end())
-	    firstSetIndex = it1->second;
-	
-	auto it2 = m.find( second);
-	if( it2 != m.end())
-	    secondSetIndex = it2->second;
-        
-        if( firstSetIndex == secondSetIndex && firstSetIndex != -1 && secondSetIndex != -1){
+        if( firstParent == secondParent && firstParent != -1 && secondParent != -1){
         }
         
-        else if( firstSetIndex == -1 && secondSetIndex == -1){
-            set<int> s;
-            s.insert( first);
-            s.insert( second);
-            if( s.size() > maxSize)
-                maxSize = s.size();
-                
-            sets.push_back( s);
-	    m[ first] = sets.size() - 1;
-	    m[ second] = sets.size() - 1;
+        else if( firstParent == -1 && secondParent == -1){
+            int minVal = min( first, second);
+	    valOnParentMap[ first] = minVal;
+	    valOnParentMap[ second] = minVal;
+	    parentOnSizeMap[ minVal] = 2;
+	    if( 2 > maxSize)
+		maxSize = 2;
         }
         
-        else if( firstSetIndex != -1 && secondSetIndex == -1){
-            sets[ firstSetIndex].insert( second);
-	    m[ second] = firstSetIndex;
-            if( sets[ firstSetIndex].size() > maxSize)
-                maxSize = sets[ firstSetIndex].size();
+        else if( firstParent != -1 && secondParent == -1){
+            valOnParentMap[ second] = firstParent;
+	    parentOnSizeMap[ firstParent]++;
+	    if( parentOnSizeMap[ firstParent] > maxSize)
+		maxSize = parentOnSizeMap[ firstParent];
         }
         
-        else if( firstSetIndex == -1 && secondSetIndex != -1){
-            sets[ secondSetIndex].insert( first);
-	    m[ first] = secondSetIndex;
-            if( sets[ secondSetIndex].size() > maxSize)
-                maxSize = sets[ secondSetIndex].size();
+        else if( firstParent == -1 && secondParent != -1){
+            valOnParentMap[ first] = secondParent;
+	    parentOnSizeMap[ secondParent]++;
+	    if( parentOnSizeMap[ secondParent] > maxSize)
+		maxSize = parentOnSizeMap[ secondParent];
         }
         
         else{
-            for( auto it = sets[secondSetIndex].begin(); it != sets[secondSetIndex].end(); it++){
-                sets[firstSetIndex].insert( *it);
-		m[*it] = firstSetIndex;
-            }
-            
-            if( sets[ firstSetIndex].size() > maxSize)
-                maxSize = sets[ firstSetIndex].size();
-            
-            //sets.erase( sets.begin() + secondSetIndex);
+	    cout << "firstParent:" << firstParent <<endl;
+	    cout << "secondParent:" << secondParent <<endl;
+	    if( firstParent < secondParent){
+		valOnParentMap[secondParent] = firstParent;
+		parentOnSizeMap[ firstParent] += parentOnSizeMap[ secondParent];
+		if( parentOnSizeMap[ firstParent] > maxSize)
+		    maxSize = parentOnSizeMap[ firstParent];
+		parentOnSizeMap.erase( parentOnSizeMap.find( secondParent));
+	    }
+	    else{
+		valOnParentMap[firstParent] = secondParent;
+		parentOnSizeMap[ secondParent] += parentOnSizeMap[ firstParent];
+		if( parentOnSizeMap[ secondParent] > maxSize)
+		    maxSize = parentOnSizeMap[ secondParent];
+		parentOnSizeMap.erase( parentOnSizeMap.find( firstParent));
+	    }
         }
         
-        //cout << first << "-" << second << endl;
-        //printSets( sets);
-        //cout << "max: " << maxSize << endl << endl;
+        /*cout << first << "-" << second << endl;
+	cout << "valOnParentMap:" << endl;
+        print( valOnParentMap);
+	cout << "parentOnSizeMap:" << endl;
+	print( parentOnSizeMap);
+        cout << "max: " << maxSize << endl << endl;
+	cout << endl;*/
         result.push_back( maxSize);
     }
     
@@ -93,7 +99,7 @@ vector<int> maxCircle(vector<vector<int>> queries) {
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input08.txt");
+    ifstream fin("input03.txt");
 
     int q;
     fin >> q;
