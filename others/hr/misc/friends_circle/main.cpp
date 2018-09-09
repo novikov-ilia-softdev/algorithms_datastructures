@@ -61,8 +61,8 @@ vector<int> maxCircle(vector<vector<int>> queries) {
         }
         
         else{
-	    cout << "firstParent:" << firstParent <<endl;
-	    cout << "secondParent:" << secondParent <<endl;
+	    //cout << "firstParent:" << firstParent <<endl;
+	    //cout << "secondParent:" << secondParent <<endl;
 	    if( firstParent < secondParent){
 		valOnParentMap[secondParent] = firstParent;
 		parentOnSizeMap[ firstParent] += parentOnSizeMap[ secondParent];
