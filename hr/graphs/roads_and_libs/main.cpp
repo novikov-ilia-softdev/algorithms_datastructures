@@ -54,8 +54,8 @@ void traverseDFS( int city, const map<int, vector<int>>& adjacents, vector<set<i
 
 long roadsAndLibraries(int n, int c_lib, int c_road, vector<vector<int>> cities) {
     if( c_lib <= c_road)
-        return c_lib * n;
-    
+	return (long)c_lib * n;
+        
     map<int, vector<int>> adjacents;
     for( int i = 0; i < cities.size(); i++){
         auto itFirst = adjacents.find( cities[i][0]);
@@ -100,13 +100,14 @@ long roadsAndLibraries(int n, int c_lib, int c_road, vector<vector<int>> cities)
     if( diff > 0)
         res += diff * c_lib;
     
+    std::cout << res << std::endl;
     return res;
 }
 
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input00.txt");
+    ifstream fin("input04.txt");
 
     int q;
     fin >> q;
