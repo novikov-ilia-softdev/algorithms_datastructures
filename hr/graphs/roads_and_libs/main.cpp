@@ -4,20 +4,6 @@ using namespace std;
 
 vector<string> split_string(string);
 
-void dbgPrintVector( const vector<int>& v){
-    for( auto it = v.begin(); it != v.end(); it++){
-        cout << *it << ", ";
-    }
-}
-
-void dbgPrintMap( const map<int, vector<int>>& m){
-    for( auto it = m.begin(); it != m.end(); it++){
-        cout << it->first << ": ";
-        dbgPrintVector( it->second);
-        cout << endl;
-    }
-}
-
 bool isVisited( int city, const vector<set<int>>& visited){
     for( int i = 0; i < visited.size(); i++){
         if( visited[ i].find( city) !=  visited[ i].end())
@@ -36,7 +22,7 @@ long getVisitedCount( const vector<set<int>>& visited){
     return res;
 }
 
-void traverseDFS( int city, const map<int, vector<int>>& adjacents, vector<set<int>>& visited){
+void traverseDFS( int city, const map<int, set<int>>& cityOnAdjacentsMap, vector<set<int>>& visited){
     set<int>& curSegment = visited[visited.size() - 1];
     
     if( curSegment.find( city) != curSegment.end())
@@ -44,11 +30,11 @@ void traverseDFS( int city, const map<int, vector<int>>& adjacents, vector<set<i
     
     curSegment.insert( city);
     
-    auto it = adjacents.find(city);
-    const vector<int>& v = it->second;
+    auto it = cityOnAdjacentsMap.find(city);
+    const set<int>& s = it->second;
     
-    for( int i = 0; i < v.size(); i++){
-        traverseDFS( v[ i], adjacents, visited);
+    for( auto it = s.begin(); it != s.end(); it++){
+        traverseDFS( *it, cityOnAdjacentsMap, visited);
     }
 }
 
@@ -56,37 +42,35 @@ long roadsAndLibraries(int n, int c_lib, int c_road, vector<vector<int>> cities)
     if( c_lib <= c_road)
 	return (long)c_lib * n;
         
-    map<int, vector<int>> adjacents;
+    map<int, set<int>> cityOnAdjacentsMap;
     for( int i = 0; i < cities.size(); i++){
-        auto itFirst = adjacents.find( cities[i][0]);
-        if( itFirst == adjacents.end()){
-            vector<int> v;
-            v.push_back( cities[i][1]);
-            adjacents.insert(pair<int, vector<int>>( cities[i][0], v));
+        auto itFirst = cityOnAdjacentsMap.find( cities[i][0]);
+        if( itFirst == cityOnAdjacentsMap.end()){
+            set<int> s;
+            s.insert( cities[i][1]);
+            cityOnAdjacentsMap.insert(pair<int, set<int>>( cities[i][0], s));
         }
         else{
-            itFirst->second.push_back( cities[i][1]);
+            itFirst->second.insert( cities[i][1]);
         }
         
-        auto itSecond = adjacents.find( cities[i][1]);
-        if( itSecond == adjacents.end()){
-            vector<int> v;
-            v.push_back( cities[i][0]);
-            adjacents.insert(pair<int, vector<int>>( cities[i][1], v));
+        auto itSecond = cityOnAdjacentsMap.find( cities[i][1]);
+        if( itSecond == cityOnAdjacentsMap.end()){
+            set<int> s;
+            s.insert( cities[i][0]);
+            cityOnAdjacentsMap.insert(pair<int, set<int>>( cities[i][1], s));
         }
         else{
-            itSecond->second.push_back( cities[i][0]);
+            itSecond->second.insert( cities[i][0]);
         }
     }
     
-    //dbgPrintMap( adjacents);
-    
     vector<set<int>> visited;
-    for( auto it = adjacents.begin(); it != adjacents.end(); it++){
+    for( auto it = cityOnAdjacentsMap.begin(); it != cityOnAdjacentsMap.end(); it++){
         if( !isVisited( it->first, visited)){
             set<int> seg;
             visited.push_back( seg);
-            traverseDFS( it->first, adjacents, visited);
+            traverseDFS( it->first, cityOnAdjacentsMap, visited);
         }
     }
     
@@ -100,7 +84,6 @@ long roadsAndLibraries(int n, int c_lib, int c_road, vector<vector<int>> cities)
     if( diff > 0)
         res += diff * c_lib;
     
-    std::cout << res << std::endl;
     return res;
 }
 
