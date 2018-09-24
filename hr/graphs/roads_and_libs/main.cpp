@@ -4,37 +4,18 @@ using namespace std;
 
 vector<string> split_string(string);
 
-bool isVisited( int city, const vector<set<int>>& visited){
-    for( int i = 0; i < visited.size(); i++){
-        if( visited[ i].find( city) !=  visited[ i].end())
-            return true;
-    }
-    
-    return false;
-}
-
-long getVisitedCount( const vector<set<int>>& visited){
-    long res = 0;
-    for( int i = 0; i < visited.size(); i++){
-        res += visited[ i].size();
-    }
-    
-    return res;
-}
-
-void traverseDFS( int city, const map<int, set<int>>& cityOnAdjacentsMap, vector<set<int>>& visited){
-    set<int>& curSegment = visited[visited.size() - 1];
-    
-    if( curSegment.find( city) != curSegment.end())
+void traverseDFS( int city, const map<int, set<int>>& cityOnAdjacentsMap, set<int>& visited, int& count){
+    if( visited.find( city) != visited.end())
         return;
     
-    curSegment.insert( city);
+    visited.insert( city);
+    count++;
     
     auto it = cityOnAdjacentsMap.find(city);
     const set<int>& s = it->second;
     
     for( auto it = s.begin(); it != s.end(); it++){
-        traverseDFS( *it, cityOnAdjacentsMap, visited);
+        traverseDFS( *it, cityOnAdjacentsMap, visited, count);
     }
 }
 
@@ -65,22 +46,17 @@ long roadsAndLibraries(int n, int c_lib, int c_road, vector<vector<int>> cities)
         }
     }
     
-    vector<set<int>> visited;
+    long res = 0;
+    set<int> visited;
     for( auto it = cityOnAdjacentsMap.begin(); it != cityOnAdjacentsMap.end(); it++){
-        if( !isVisited( it->first, visited)){
-            set<int> seg;
-            visited.push_back( seg);
-            traverseDFS( it->first, cityOnAdjacentsMap, visited);
+        if( visited.find( it->first) == visited.end()){
+            int count = 0;
+            traverseDFS( it->first, cityOnAdjacentsMap, visited, count);
+	    res += (count - 1) * c_road + c_lib;
         }
     }
     
-    long res = 0;
-    
-    for( int i = 0; i < visited.size(); i++){
-        res += (visited[i].size() - 1) * c_road + c_lib;
-    }
-    
-    long diff = n - getVisitedCount( visited);
+    long diff = n - visited.size();
     if( diff > 0)
         res += diff * c_lib;
     
