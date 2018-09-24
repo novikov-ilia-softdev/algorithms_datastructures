@@ -18,14 +18,34 @@ void dbgPrintMap( const map<int, vector<int>>& m){
     }
 }
 
-void traverseDFS( int city, const map<int, vector<int>>& adjacents, set<int>& visited){
-    if( s.find( city) != s.end())
+bool isVisited( int city, const vector<set<int>>& visited){
+    for( int i = 0; i < visited.size(); i++){
+        if( visited[ i].find( city) !=  visited[ i].end())
+            return true;
+    }
+    
+    return false;
+}
+
+long getVisitedCount( const vector<set<int>>& visited){
+    long res = 0;
+    for( int i = 0; i < visited.size(); i++){
+        res += visited[ i].size();
+    }
+    
+    return res;
+}
+
+void traverseDFS( int city, const map<int, vector<int>>& adjacents, vector<set<int>>& visited){
+    set<int>& curSegment = visited[visited.size() - 1];
+    
+    if( curSegment.find( city) != curSegment.end())
         return;
     
-    s.insert( city);
+    curSegment.insert( city);
     
-    auto it = adjacents[ city];
-    vector<int>& v = it->second;
+    auto it = adjacents.find(city);
+    const vector<int>& v = it->second;
     
     for( int i = 0; i < v.size(); i++){
         traverseDFS( v[ i], adjacents, visited);
@@ -59,16 +79,28 @@ long roadsAndLibraries(int n, int c_lib, int c_road, vector<vector<int>> cities)
         }
     }
     
-    dbgPrintMap( adjacents);
+    //dbgPrintMap( adjacents);
     
-    vector< set<int>> visited;
-    set<int> s;
-    visited.push_back( s);
-    for( auto it = m.begin(); it != m.end(); it++){
-        traverseDFS( it->first, adjacents, visited);
+    vector<set<int>> visited;
+    for( auto it = adjacents.begin(); it != adjacents.end(); it++){
+        if( !isVisited( it->first, visited)){
+            set<int> seg;
+            visited.push_back( seg);
+            traverseDFS( it->first, adjacents, visited);
+        }
     }
     
-    return 0;
+    long res = 0;
+    
+    for( int i = 0; i < visited.size(); i++){
+        res += (visited[i].size() - 1) * c_road + c_lib;
+    }
+    
+    long diff = n - getVisitedCount( visited);
+    if( diff > 0)
+        res += diff * c_lib;
+    
+    return res;
 }
 
 int main()
