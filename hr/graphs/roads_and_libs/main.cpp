@@ -19,31 +19,26 @@ void traverseDFS( int city, const map<int, set<int>>& cityOnAdjacentsMap, set<in
     }
 }
 
+void addConnection( map<int, set<int>>& cityOnAdjacentsMap, int src, int dst){
+    auto it = cityOnAdjacentsMap.find( src);
+    if( it == cityOnAdjacentsMap.end()){
+	set<int> s;
+	s.insert( dst);
+	cityOnAdjacentsMap.insert(pair<int, set<int>>( src, s));
+    }
+    else{
+	it->second.insert( dst);
+    }
+}
+
 long roadsAndLibraries(int n, int c_lib, int c_road, vector<vector<int>> cities) {
     if( c_lib <= c_road)
 	return (long)c_lib * n;
         
     map<int, set<int>> cityOnAdjacentsMap;
     for( int i = 0; i < cities.size(); i++){
-        auto itFirst = cityOnAdjacentsMap.find( cities[i][0]);
-        if( itFirst == cityOnAdjacentsMap.end()){
-            set<int> s;
-            s.insert( cities[i][1]);
-            cityOnAdjacentsMap.insert(pair<int, set<int>>( cities[i][0], s));
-        }
-        else{
-            itFirst->second.insert( cities[i][1]);
-        }
-        
-        auto itSecond = cityOnAdjacentsMap.find( cities[i][1]);
-        if( itSecond == cityOnAdjacentsMap.end()){
-            set<int> s;
-            s.insert( cities[i][0]);
-            cityOnAdjacentsMap.insert(pair<int, set<int>>( cities[i][1], s));
-        }
-        else{
-            itSecond->second.insert( cities[i][0]);
-        }
+	addConnection( cityOnAdjacentsMap, cities[i][0], cities[i][1]);
+	addConnection( cityOnAdjacentsMap, cities[i][1], cities[i][0]);
     }
     
     long res = 0;
