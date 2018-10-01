@@ -18,8 +18,47 @@ void addConnection( NodeOnAdjacentsMap& map, int src, int dst, int time){
     }
 }
 
-void isolate( int machine, NodeOnAdjacentsMap& map, int& time){
+bool isMachine( int node, const vector<int>& machines){
+    for(int i = 0; i < machines.size(); i++){
+	if( node == machines[ i])
+	    return true;
+    }
+    
+    return false;
+}
+
+void doDFS( int node, int roadTime, NodeOnAdjacentsMap& map, set<int>& visited, int& time, const vector<int>& machines, vector<int> path){
+    //cout << "doDFS - " << "node: " << node << ", roadTime: " << roadTime << endl;
+    if( visited.find( node) != visited.end())
+	return;
+    
+    visited.insert( node);
+    path.push_back( roadTime);
+    
+    if( isMachine( node, machines)){
+	//cout << "isMachine: " << node << endl;
+	sort( path.begin(), path.end());
+	time += path[ 0];
+	//cout << "add time " << path[ 0] << endl;
+	return;
+    }
+	
+    auto it = map.find( node);
+    for( int i = 0; i < it->second.size(); i++){
+	doDFS( it->second[i].first, it->second[i].second, map, visited, time, machines, path);
+    }
+}
+
+void isolate( int machine, NodeOnAdjacentsMap& map, int& time, const vector<int>& machines){
+    //cout << endl << "isolate: " << machine << endl;
     auto it = map.find( machine);
+    
+    set<int> visited;
+    visited.insert( machine);
+    vector<int> path;
+    for( int i = 0; i < it->second.size(); i++){
+	doDFS( it->second[i].first, it->second[i].second, map, visited, time, machines, path);
+    }
 }
 
 int minTime(vector<vector<int>> roads, vector<int> machines) {
@@ -35,18 +74,20 @@ int minTime(vector<vector<int>> roads, vector<int> machines) {
     int time = 0;
     
     for( int i = 0; i < machines.size(); i++){
-        isolate( machines[ i], nodeOnAdjacentsMap, time);
+        isolate( machines[ i], nodeOnAdjacentsMap, time, machines);
     }
 
-    return time;
+    //cout << "res" << time << endl;
+    return time / 2;
 }
 
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
+    ifstream fin("input00.txt");
 
     string nk_temp;
-    getline(cin, nk_temp);
+    getline(fin, nk_temp);
 
     vector<string> nk = split_string(nk_temp);
 
@@ -59,18 +100,18 @@ int main()
         roads[i].resize(3);
 
         for (int j = 0; j < 3; j++) {
-            cin >> roads[i][j];
+            fin >> roads[i][j];
         }
 
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        fin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 
     vector<int> machines(k);
 
     for (int i = 0; i < k; i++) {
         int machines_item;
-        cin >> machines_item;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        fin >> machines_item;
+        fin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         machines[i] = machines_item;
     }
