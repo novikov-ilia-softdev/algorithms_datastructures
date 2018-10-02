@@ -25,6 +25,7 @@ private:
     bool isMachine_( int node);
     bool isRoadDestroyed_( Road roadToDestroy);
     void destroyRoad_( Road roadToDestroy);
+    void dbg_print_();
 
 private:
     typedef map<int, vector<pair<int,int>>> NodeOnAdjacentsMap;
@@ -63,6 +64,7 @@ void Matrix::makeSave(){
 }
 
 void Matrix::isolate_( int machine){
+    //cout << endl << "isolate_:" << machine << endl;
     set<int> visited;
     visited.insert( machine);
     for( int i = 0; i < nodeOnAdjacentsMap_[ machine].size(); i++){
@@ -74,6 +76,7 @@ void Matrix::isolate_( int machine){
 }
 
 void Matrix::doDFS_( int src, int dst, int time, set<int>& visited, Road roadToDestroy){
+    //cout << "doDFS_: " << src << "->" << dst << " (" << time << ")" << endl;
     if( visited.find( dst) != visited.end())
 	return;
     
@@ -83,6 +86,11 @@ void Matrix::doDFS_( int src, int dst, int time, set<int>& visited, Road roadToD
         roadToDestroy.dst = dst;
         roadToDestroy.time = time;
     }
+    
+    //cout << "isMachine_(" << dst << "): " << isMachine_( dst) << endl;
+    //cout << "!isRoadDestroyed_( roadToDestroy): " << !isRoadDestroyed_( roadToDestroy) << endl;
+    
+    //dbg_print_();
     
     if( isMachine_( dst) && !isRoadDestroyed_( roadToDestroy)){
         destroyRoad_( roadToDestroy);
@@ -102,15 +110,24 @@ bool Matrix::isMachine_( int node){
 }
 
 bool Matrix::isRoadDestroyed_( Road roadToDestroy){
-    return (destroyedRoads_.find( roadToDestroy.src + "_" + roadToDestroy.dst) != destroyedRoads_.end() ||
-            destroyedRoads_.find( roadToDestroy.dst + "_" + roadToDestroy.src) != destroyedRoads_.end()
+    return (destroyedRoads_.find( to_string( roadToDestroy.src) + "_" + to_string( roadToDestroy.dst)) != destroyedRoads_.end() ||
+            destroyedRoads_.find( to_string( roadToDestroy.dst) + "_" + to_string( roadToDestroy.src)) != destroyedRoads_.end()
     );
 }
 
 void Matrix::destroyRoad_( Road roadToDestroy){
-    cout << "destroyRoad_: " << roadToDestroy.src << "-" << roadToDestroy.dst << " (" << roadToDestroy.time << ")" << endl;
-    destroyedRoads_.insert( roadToDestroy.src + "_" + roadToDestroy.dst);
-    destroyedRoads_.insert( roadToDestroy.dst + "_" + roadToDestroy.src);
+    //cout << "destroyRoad_: " << roadToDestroy.src << "-" << roadToDestroy.dst << " (" << roadToDestroy.time << ")" << endl;
+    destroyedRoads_.insert( to_string( roadToDestroy.src) + "_" + to_string( roadToDestroy.dst));
+    destroyedRoads_.insert( to_string( roadToDestroy.dst) + "_" + to_string( roadToDestroy.src));
+}
+
+void Matrix::dbg_print_()
+{
+    //cout << "destroyedRoads_: " << endl;
+    for( auto it = destroyedRoads_.begin(); it != destroyedRoads_.end(); it++){
+        cout << *it << ",";
+    }
+    cout << endl;
 }
 
 int minTime(vector<vector<int>> roads, vector<int> machines) {
@@ -128,7 +145,7 @@ int minTime(vector<vector<int>> roads, vector<int> machines) {
     
     matrix.makeSave();
 
-    cout << matrix.getTime() << endl;
+    //cout << matrix.getTime() << endl;
     return matrix.getTime();
 }
 
