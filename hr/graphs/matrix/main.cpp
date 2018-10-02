@@ -4,6 +4,13 @@ using namespace std;
 
 vector<string> split_string(string);
 
+struct Road{
+    Road( int s, int d, int t): src( s), dst( d), time( t) {}
+    int src;
+    int dst;
+    int time;
+};
+
 class Matrix{
 public:
     Matrix();
@@ -14,16 +21,20 @@ public:
     
 private:
     void isolate_( int machine);
-    void doDFS_( int src, int dst, int time, set<int>& visited){
+    void doDFS_( int src, int dst, int time, set<int>& visited, Road roadToDestroy);
+    bool isMachine_( int node);
+    bool isRoadDestroyed_( Road roadToDestroy);
+    void destroyRoad_( Road roadToDestroy);
 
 private:
     typedef map<int, vector<pair<int,int>>> NodeOnAdjacentsMap;
     NodeOnAdjacentsMap nodeOnAdjacentsMap_;
     set<int> machines_;
     int time_;
+    set<string> destroyedRoads_;
 };
 
-Matrix() : time_( 0) {}
+Matrix::Matrix() : time_( 0) {}
 
 void Matrix::addConnection( int src, int dst, int time){
     auto it = nodeOnAdjacentsMap_.find( src);
@@ -53,23 +64,53 @@ void Matrix::makeSave(){
 
 void Matrix::isolate_( int machine){
     set<int> visited;
-    visited.insert( machine)
+    visited.insert( machine);
     for( int i = 0; i < nodeOnAdjacentsMap_[ machine].size(); i++){
-        doDFS_( machine, nodeOnAdjacentsMap_[ machine][i].first, nodeOnAdjacentsMap_[ machine][i].dst, visited);
+        int nextNode = nodeOnAdjacentsMap_[ machine][i].first;
+        int time = nodeOnAdjacentsMap_[ machine][i].second;
+        Road roadToDestroy( machine, nextNode, time);
+        doDFS_( machine, nextNode, time, visited, roadToDestroy);
     }
 }
 
-void Matrix::doDFS_( int src, int dst, int time, set<int>& visited){
+void Matrix::doDFS_( int src, int dst, int time, set<int>& visited, Road roadToDestroy){
     if( visited.find( dst) != visited.end())
 	return;
     
     visited.insert( dst);
-    
-    if( isMachine( dst)){
-        
+    if( time < roadToDestroy.time){
+        roadToDestroy.src = src;
+        roadToDestroy.dst = dst;
+        roadToDestroy.time = time;
     }
     
+    if( isMachine_( dst) && !isRoadDestroyed_( roadToDestroy)){
+        destroyRoad_( roadToDestroy);
+        time_ += roadToDestroy.time;
+        return;
+    }
     
+    for( int i = 0; i < nodeOnAdjacentsMap_[ dst].size(); i++){
+        int nextNode = nodeOnAdjacentsMap_[ dst][i].first;
+        int time = nodeOnAdjacentsMap_[ dst][i].second;
+        doDFS_( dst, nextNode, time, visited, roadToDestroy);
+    }
+}
+
+bool Matrix::isMachine_( int node){
+    return (machines_.find( node) != machines_.end());
+}
+
+bool Matrix::isRoadDestroyed_( Road roadToDestroy){
+    return (destroyedRoads_.find( roadToDestroy.src + "_" + roadToDestroy.dst) != destroyedRoads_.end() ||
+            destroyedRoads_.find( roadToDestroy.dst + "_" + roadToDestroy.src) != destroyedRoads_.end()
+    );
+}
+
+void Matrix::destroyRoad_( Road roadToDestroy){
+    cout << "destroyRoad_: " << roadToDestroy.src << "-" << roadToDestroy.dst << " (" << roadToDestroy.time << ")" << endl;
+    destroyedRoads_.insert( roadToDestroy.src + "_" + roadToDestroy.dst);
+    destroyedRoads_.insert( roadToDestroy.dst + "_" + roadToDestroy.src);
 }
 
 int minTime(vector<vector<int>> roads, vector<int> machines) {
@@ -87,13 +128,14 @@ int minTime(vector<vector<int>> roads, vector<int> machines) {
     
     matrix.makeSave();
 
+    cout << matrix.getTime() << endl;
     return matrix.getTime();
 }
 
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input10.txt");
+    ifstream fin("input01.txt");
 
     string nk_temp;
     getline(fin, nk_temp);
