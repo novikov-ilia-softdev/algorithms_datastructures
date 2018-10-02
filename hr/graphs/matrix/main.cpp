@@ -4,84 +4,90 @@ using namespace std;
 
 vector<string> split_string(string);
 
-typedef map<int, vector<pair<int,int>>> NodeOnAdjacentsMap;
+class Matrix{
+public:
+    Matrix();
+    void addConnection( int src, int dst, int time);
+    void addMachine( int machine);
+    void makeSave();
+    int getTime() const;
+    
+private:
+    void isolate_( int machine);
+    void doDFS_( int src, int dst, int time, set<int>& visited){
 
-void addConnection( NodeOnAdjacentsMap& map, int src, int dst, int time){
-    auto it = map.find( src);
-    if( it == map.end()){
+private:
+    typedef map<int, vector<pair<int,int>>> NodeOnAdjacentsMap;
+    NodeOnAdjacentsMap nodeOnAdjacentsMap_;
+    set<int> machines_;
+    int time_;
+};
+
+Matrix() : time_( 0) {}
+
+void Matrix::addConnection( int src, int dst, int time){
+    auto it = nodeOnAdjacentsMap_.find( src);
+    if( it == nodeOnAdjacentsMap_.end()){
         vector<pair<int,int>> v;
         v.push_back( pair<int,int>( dst, time));
-        map.insert( pair<int, vector<pair<int,int>>>( src, v));
+        nodeOnAdjacentsMap_.insert( pair<int, vector<pair<int,int>>>( src, v));
     }
     else{
         it->second.push_back( pair<int,int>( dst, time));
     }
 }
 
-bool isMachine( int node, const vector<int>& machines){
-    for(int i = 0; i < machines.size(); i++){
-	if( node == machines[ i])
-	    return true;
-    }
-    
-    return false;
+void Matrix::addMachine( int machine){
+    machines_.insert( machine);
 }
 
-void doDFS( int node, int roadTime, NodeOnAdjacentsMap& map, set<int>& visited, int& time, const vector<int>& machines, vector<int> path){
-    cout << "doDFS - " << "node: " << node << ", roadTime: " << roadTime << endl;
-    if( visited.find( node) != visited.end())
-	return;
-    
-    visited.insert( node);
-    path.push_back( roadTime);
-    
-    if( isMachine( node, machines)){
-	cout << "isMachine: " << node << endl;
-	sort( path.begin(), path.end());
-        
-        
-        if( notDestr)
-	time += path[ 0];
-	cout << "add time " << path[ 0] << endl;
-	return;
-    }
-	
-    auto it = map.find( node);
-    for( int i = 0; i < it->second.size(); i++){
-	doDFS( it->second[i].first, it->second[i].second, map, visited, time, machines, path);
+int Matrix::getTime() const{
+    return time_;
+}
+
+void Matrix::makeSave(){
+    for( auto it = machines_.begin(); it != machines_.end(); it++){
+        isolate_( *it);
     }
 }
 
-void isolate( int machine, NodeOnAdjacentsMap& map, int& time, const vector<int>& machines){
-    cout << endl << "isolate: " << machine << endl;
-    auto it = map.find( machine);
-    
+void Matrix::isolate_( int machine){
     set<int> visited;
-    visited.insert( machine);
-    vector<int> path;
-    for( int i = 0; i < it->second.size(); i++){
-	doDFS( it->second[i].first, it->second[i].second, map, visited, time, machines, path);
+    visited.insert( machine)
+    for( int i = 0; i < nodeOnAdjacentsMap_[ machine].size(); i++){
+        doDFS_( machine, nodeOnAdjacentsMap_[ machine][i].first, nodeOnAdjacentsMap_[ machine][i].dst, visited);
     }
+}
+
+void Matrix::doDFS_( int src, int dst, int time, set<int>& visited){
+    if( visited.find( dst) != visited.end())
+	return;
+    
+    visited.insert( dst);
+    
+    if( isMachine( dst)){
+        
+    }
+    
+    
 }
 
 int minTime(vector<vector<int>> roads, vector<int> machines) {
-    // first - node
-    // second - time
-    NodeOnAdjacentsMap nodeOnAdjacentsMap;
+    
+    Matrix matrix;
     
     for(int i = 0; i < roads.size(); i++){
-        addConnection( nodeOnAdjacentsMap, roads[ i][0], roads[ i][1], roads[ i][2]);
-        addConnection( nodeOnAdjacentsMap, roads[ i][1], roads[ i][0], roads[ i][2]);
+        matrix.addConnection( roads[ i][0], roads[ i][1], roads[ i][2]);
+        matrix.addConnection( roads[ i][1], roads[ i][0], roads[ i][2]);
     }
-    
-    int time = 0;
     
     for( int i = 0; i < machines.size(); i++){
-        isolate( machines[ i], nodeOnAdjacentsMap, time, machines);
+        matrix.addMachine( machines[ i]);
     }
+    
+    matrix.makeSave();
 
-    cout << "res" << time << endl;
-    return time / 2;
+    return matrix.getTime();
 }
 
 int main()
