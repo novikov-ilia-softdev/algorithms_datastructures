@@ -28,7 +28,7 @@ bool isMachine( int node, const vector<int>& machines){
 }
 
 void doDFS( int node, int roadTime, NodeOnAdjacentsMap& map, set<int>& visited, int& time, const vector<int>& machines, vector<int> path){
-    //cout << "doDFS - " << "node: " << node << ", roadTime: " << roadTime << endl;
+    cout << "doDFS - " << "node: " << node << ", roadTime: " << roadTime << endl;
     if( visited.find( node) != visited.end())
 	return;
     
@@ -36,10 +36,13 @@ void doDFS( int node, int roadTime, NodeOnAdjacentsMap& map, set<int>& visited, 
     path.push_back( roadTime);
     
     if( isMachine( node, machines)){
-	//cout << "isMachine: " << node << endl;
+	cout << "isMachine: " << node << endl;
 	sort( path.begin(), path.end());
+        
+        
+        if( notDestr)
 	time += path[ 0];
-	//cout << "add time " << path[ 0] << endl;
+	cout << "add time " << path[ 0] << endl;
 	return;
     }
 	
@@ -50,7 +53,7 @@ void doDFS( int node, int roadTime, NodeOnAdjacentsMap& map, set<int>& visited, 
 }
 
 void isolate( int machine, NodeOnAdjacentsMap& map, int& time, const vector<int>& machines){
-    //cout << endl << "isolate: " << machine << endl;
+    cout << endl << "isolate: " << machine << endl;
     auto it = map.find( machine);
     
     set<int> visited;
@@ -77,14 +80,14 @@ int minTime(vector<vector<int>> roads, vector<int> machines) {
         isolate( machines[ i], nodeOnAdjacentsMap, time, machines);
     }
 
-    //cout << "res" << time << endl;
+    cout << "res" << time << endl;
     return time / 2;
 }
 
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input00.txt");
+    ifstream fin("input10.txt");
 
     string nk_temp;
     getline(fin, nk_temp);
