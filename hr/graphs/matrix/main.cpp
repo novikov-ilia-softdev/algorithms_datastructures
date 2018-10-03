@@ -21,7 +21,7 @@ public:
     
 private:
     void isolate_( int machine);
-    void doDFS_( int src, int dst, int time, set<int>& visited, Road roadToDestroy);
+    void doDFS_( Road curRoad, set<int>& visited, Road roadToDestroy);
     bool isMachine_( int node);
     bool isRoadDestroyed_( Road roadToDestroy);
     void destroyRoad_( Road roadToDestroy);
@@ -68,27 +68,24 @@ void Matrix::isolate_( int machine){
     set<int> visited;
     visited.insert( machine);
     for( int i = 0; i < nodeOnAdjacentsMap_[ machine].size(); i++){
-        int nextNode = nodeOnAdjacentsMap_[ machine][i].first;
-        int time = nodeOnAdjacentsMap_[ machine][i].second;
-        Road roadToDestroy( machine, nextNode, time);
-        doDFS_( machine, nextNode, time, visited, roadToDestroy);
+        Road nextRoad( machine, nodeOnAdjacentsMap_[ machine][i].first, nodeOnAdjacentsMap_[ machine][i].second);
+        doDFS_( nextRoad, visited, nextRoad);
     }
 }
 
-void Matrix::doDFS_( int src, int dst, int time, set<int>& visited, Road roadToDestroy){
+void Matrix::doDFS_( Road curRoad, set<int>& visited, Road roadToDestroy){
     //cout << "doDFS_: " << src << "->" << dst << " (" << time << ")" << endl;
-    if( visited.find( dst) != visited.end())
+    if( visited.find( curRoad.dst) != visited.end())
 	return;
     
-    Road curRoad( src, dst, time);
     if( isRoadDestroyed_( curRoad))
         return;
     
-    visited.insert( dst);
-    if( time < roadToDestroy.time){
-        roadToDestroy.src = src;
-        roadToDestroy.dst = dst;
-        roadToDestroy.time = time;
+    visited.insert( curRoad.dst);
+    if( curRoad.time < roadToDestroy.time){
+        roadToDestroy.src = curRoad.src;
+        roadToDestroy.dst = curRoad.dst;
+        roadToDestroy.time = curRoad.time;
     }
     
     //cout << "isMachine_(" << dst << "): " << isMachine_( dst) << endl;
@@ -96,16 +93,15 @@ void Matrix::doDFS_( int src, int dst, int time, set<int>& visited, Road roadToD
     
     //dbg_print_();
     
-    if( isMachine_( dst) && !isRoadDestroyed_( roadToDestroy)){
+    if( isMachine_( curRoad.dst) && !isRoadDestroyed_( roadToDestroy)){
         destroyRoad_( roadToDestroy);
         time_ += roadToDestroy.time;
         return;
     }
     
-    for( int i = 0; i < nodeOnAdjacentsMap_[ dst].size(); i++){
-        int nextNode = nodeOnAdjacentsMap_[ dst][i].first;
-        int time = nodeOnAdjacentsMap_[ dst][i].second;
-        doDFS_( dst, nextNode, time, visited, roadToDestroy);
+    for( int i = 0; i < nodeOnAdjacentsMap_[ curRoad.dst].size(); i++){
+        Road nextRoad (curRoad.dst, nodeOnAdjacentsMap_[ curRoad.dst][i].first, nodeOnAdjacentsMap_[ curRoad.dst][i].second);
+        doDFS_( nextRoad, visited, roadToDestroy);
     }
 }
 
