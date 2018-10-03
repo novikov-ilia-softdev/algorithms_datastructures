@@ -80,6 +80,10 @@ void Matrix::doDFS_( int src, int dst, int time, set<int>& visited, Road roadToD
     if( visited.find( dst) != visited.end())
 	return;
     
+    Road curRoad( src, dst, time);
+    if( isRoadDestroyed_( curRoad))
+        return;
+    
     visited.insert( dst);
     if( time < roadToDestroy.time){
         roadToDestroy.src = src;
@@ -145,14 +149,14 @@ int minTime(vector<vector<int>> roads, vector<int> machines) {
     
     matrix.makeSave();
 
-    //cout << matrix.getTime() << endl;
+    cout << matrix.getTime() << endl;
     return matrix.getTime();
 }
 
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input01.txt");
+    ifstream fin("input07.txt");
 
     string nk_temp;
     getline(fin, nk_temp);
