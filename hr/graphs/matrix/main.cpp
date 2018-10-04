@@ -21,7 +21,7 @@ public:
     
 private:
     void isolate_( int machine);
-    void doDFS_( Road curRoad, set<int>& visited, Road roadToDestroy);
+    bool doDFS_( Road curRoad, Road roadToDestroy);
     bool isMachine_( int node);
     bool isRoadDestroyed_( Road roadToDestroy);
     void destroyRoad_( Road roadToDestroy);
@@ -65,44 +65,44 @@ void Matrix::makeSave(){
 
 void Matrix::isolate_( int machine){
     //cout << endl << "isolate_:" << machine << endl;
-    set<int> visited;
-    visited.insert( machine);
     for( int i = 0; i < nodeOnAdjacentsMap_[ machine].size(); i++){
         Road nextRoad( machine, nodeOnAdjacentsMap_[ machine][i].first, nodeOnAdjacentsMap_[ machine][i].second);
-        doDFS_( nextRoad, visited, nextRoad);
+        doDFS_( nextRoad, nextRoad);
     }
 }
 
-void Matrix::doDFS_( Road curRoad, set<int>& visited, Road roadToDestroy){
+bool Matrix::doDFS_( Road curRoad, Road roadToDestroy){
     //cout << "doDFS_: " << src << "->" << dst << " (" << time << ")" << endl;
-    if( visited.find( curRoad.dst) != visited.end())
-	return;
     
     if( isRoadDestroyed_( curRoad))
-        return;
+        return false;
     
-    visited.insert( curRoad.dst);
     if( curRoad.time < roadToDestroy.time){
         roadToDestroy.src = curRoad.src;
         roadToDestroy.dst = curRoad.dst;
         roadToDestroy.time = curRoad.time;
     }
     
-    //cout << "isMachine_(" << dst << "): " << isMachine_( dst) << endl;
-    //cout << "!isRoadDestroyed_( roadToDestroy): " << !isRoadDestroyed_( roadToDestroy) << endl;
-    
-    //dbg_print_();
-    
     if( isMachine_( curRoad.dst) && !isRoadDestroyed_( roadToDestroy)){
         destroyRoad_( roadToDestroy);
         time_ += roadToDestroy.time;
-        return;
+        return true;
     }
     
+    bool cullingBranch = true;
     for( int i = 0; i < nodeOnAdjacentsMap_[ curRoad.dst].size(); i++){
         Road nextRoad (curRoad.dst, nodeOnAdjacentsMap_[ curRoad.dst][i].first, nodeOnAdjacentsMap_[ curRoad.dst][i].second);
-        doDFS_( nextRoad, visited, roadToDestroy);
+        
+        if( nextRoad.dst == curRoad.src)
+            continue;
+        
+        if( doDFS_( nextRoad, roadToDestroy))
+            cullingBranch = false;
+        //else
+            //destroyRoad_( nextRoad); 
     }
+    
+    return cullingBranch;
 }
 
 bool Matrix::isMachine_( int node){
