@@ -9,16 +9,76 @@ struct Point{
     int x;
     int y;
     int steps;
-}
+};
 
 bool isGoal( const Point& cur, const Point& goal){
     return ( cur.x == goal.x && cur.y == goal.y);
 }
 
-vector<Point> getNext( const Point& cur, const vector<string>& grid){
+vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>& grid){
     // TODO: add visited map
+
+    vector<Point> nexts;
     
+    // goal ? forbidden ? range ? 
     
+    // right
+    if( cur.y != grid.size() - 1){
+        int right = cur.y;
+        while( right + 1 < grid.size() &&
+               grid[ cur.x][right + 1] != 'X' && 
+               !(cur.x == goal.x && right + 1 == goal.y)){
+            
+            right++;
+        }
+        
+        Point rightNext( cur.x, right);
+        nexts.push_back( rightNext);
+    }
+    
+    // left
+    if( cur.y != 0){
+        int left = cur.y;
+        while( left - 1 >= 0 &&
+               grid[ cur.x][left - 1] != 'X' && 
+               !(cur.x == goal.x && left - 1 == goal.y)){
+            
+            left--;
+        }
+        
+        Point leftNext( cur.x, left);
+        nexts.push_back( leftNext);
+    }
+    
+    // down
+    if( cur.x != grid.size() - 1){
+        int down = cur.x;
+        while( down + 1 < grid.size() &&
+               grid[ down + 1][cur.y] != 'X' && 
+               !(down + 1 == goal.x && cur.y == goal.y)){
+            
+            down++;
+        }
+        
+        Point downNext( down, cur.y);
+        nexts.push_back( downNext);
+    }
+    
+    // up
+    if( cur.x != 0){
+        int up = cur.x;
+        while( up - 1 >= 0 &&
+               grid[ up - 1][cur.y] != 'X' && 
+               !(up - 1 == goal.x && cur.y == goal.y)){
+            
+            up--;
+        }
+        
+        Point upNext( up, cur.y);
+        nexts.push_back( upNext);
+    }
+    
+    return nexts;
 }
 
 // Complete the minimumMoves function below.
@@ -37,12 +97,14 @@ int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goa
         if( isGoal( cur, goal))
             return cur.steps;
 
-        vector<Point> nexts = getNext( cur, grid);
+        vector<Point> nexts = getNext( cur, goal, grid);
 
         for( int i = 0; i < nexts.size(); i++){
             q.push( nexts[ i]);
         }
     }
+
+    return 0;
 }
 
 int main()
