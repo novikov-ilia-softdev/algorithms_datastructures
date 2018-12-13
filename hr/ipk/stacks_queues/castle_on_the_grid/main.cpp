@@ -5,17 +5,26 @@ using namespace std;
 vector<string> split_string(string);
 
 struct Point{
-    Point( int x_, int y_): x( x_, y( y_)) {}
+    Point( int x_, int y_, int steps_ = 0): x( x_), y( y_), steps( steps_) {}
     int x;
     int y;
+    int steps;
+}
+
+bool isGoal( const Point& cur, const Point& goal){
+    return ( cur.x == goal.x && cur.y == goal.y);
+}
+
+vector<Point> getNext( const Point& cur, const vector<string>& grid){
+    // TODO: add visited map
+    
     
 }
 
 // Complete the minimumMoves function below.
 int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goalY) {
-    int minMoves = 0;
-    
     queue<Point> q;
+    
     Point start( startX, startY);
     q.push( start);
     
@@ -24,14 +33,15 @@ int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goa
     while( !q.empty()){
         Point cur = q.front();
         q.pop();
-
-        vector<Point> next = getNext( cur, grid);
-
-        for( int i = 0; i < next.size(); i++){
-            if( )
-        }
-
         
+        if( isGoal( cur, goal))
+            return cur.steps;
+
+        vector<Point> nexts = getNext( cur, grid);
+
+        for( int i = 0; i < nexts.size(); i++){
+            q.push( nexts[ i]);
+        }
     }
 }
 
