@@ -15,12 +15,15 @@ bool isGoal( const Point& cur, const Point& goal){
     return ( cur.x == goal.x && cur.y == goal.y);
 }
 
-vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>& grid){
-    // TODO: add visited map
+void addNext( Point point, vector<Point>& nexts, set<string>& visited){
+    if( visited.find( to_string( point.x) + "_" + to_string( point.y)) == visited.end()){
+        visited.insert( to_string( point.x) + "_" + to_string( point.y));
+        nexts.push_back( point);
+    }
+}
 
+vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>& grid, set<string>& visited){
     vector<Point> nexts;
-    
-    // goal ? forbidden ? range ? 
     
     // right
     if( cur.y != grid.size() - 1){
@@ -33,7 +36,7 @@ vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>
         }
         
         Point rightNext( cur.x, right);
-        nexts.push_back( rightNext);
+        addNext( rightNext, nexts, visited);
     }
     
     // left
@@ -47,7 +50,7 @@ vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>
         }
         
         Point leftNext( cur.x, left);
-        nexts.push_back( leftNext);
+        addNext( leftNext, nexts, visited);
     }
     
     // down
@@ -61,7 +64,7 @@ vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>
         }
         
         Point downNext( down, cur.y);
-        nexts.push_back( downNext);
+        addNext( downNext, nexts, visited);
     }
     
     // up
@@ -75,7 +78,7 @@ vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>
         }
         
         Point upNext( up, cur.y);
-        nexts.push_back( upNext);
+        addNext( upNext, nexts, visited);
     }
     
     return nexts;
@@ -90,42 +93,48 @@ int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goa
     
     Point goal( goalX, goalY);
     
+    set<string> visited;
+    visited.insert( to_string( start.x) + "_" + to_string( start.y));
+    
     while( !q.empty()){
         Point cur = q.front();
         q.pop();
         
+        cout << "next: " << cur.x << "," << cur.y << endl;
+        
         if( isGoal( cur, goal))
             return cur.steps;
 
-        vector<Point> nexts = getNext( cur, goal, grid);
+        vector<Point> nexts = getNext( cur, goal, grid, visited);
 
         for( int i = 0; i < nexts.size(); i++){
             q.push( nexts[ i]);
         }
     }
 
-    return 0;
+    return -1;
 }
 
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
+    ifstream fin("input10.txt");
 
     int n;
-    cin >> n;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    fin >> n;
+    fin.ignore(numeric_limits<streamsize>::max(), '\n');
 
     vector<string> grid(n);
 
     for (int i = 0; i < n; i++) {
         string grid_item;
-        getline(cin, grid_item);
+        getline(fin, grid_item);
 
         grid[i] = grid_item;
     }
 
     string startXStartY_temp;
-    getline(cin, startXStartY_temp);
+    getline(fin, startXStartY_temp);
 
     vector<string> startXStartY = split_string(startXStartY_temp);
 
@@ -138,6 +147,8 @@ int main()
     int goalY = stoi(startXStartY[3]);
 
     int result = minimumMoves(grid, startX, startY, goalX, goalY);
+    
+    cout << "result: " << result << endl;
 
     fout << result << "\n";
 
