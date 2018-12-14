@@ -29,13 +29,14 @@ vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>
     if( cur.y != grid.size() - 1){
         int right = cur.y;
         while( right + 1 < grid.size() &&
-               grid[ cur.x][right + 1] != 'X' && 
-               !(cur.x == goal.x && right + 1 == goal.y)){
+               grid[ cur.x][right + 1] != 'X'){
             
             right++;
+            if (cur.x == goal.x && right == goal.y)
+                break;
         }
         
-        Point rightNext( cur.x, right);
+        Point rightNext( cur.x, right, cur.steps + 1);
         addNext( rightNext, nexts, visited);
     }
     
@@ -43,13 +44,14 @@ vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>
     if( cur.y != 0){
         int left = cur.y;
         while( left - 1 >= 0 &&
-               grid[ cur.x][left - 1] != 'X' && 
-               !(cur.x == goal.x && left - 1 == goal.y)){
-            
+               grid[ cur.x][left - 1] != 'X'){
+
             left--;
+            if(cur.x == goal.x && left == goal.y)
+                break;
         }
         
-        Point leftNext( cur.x, left);
+        Point leftNext( cur.x, left, cur.steps + 1);
         addNext( leftNext, nexts, visited);
     }
     
@@ -57,13 +59,14 @@ vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>
     if( cur.x != grid.size() - 1){
         int down = cur.x;
         while( down + 1 < grid.size() &&
-               grid[ down + 1][cur.y] != 'X' && 
-               !(down + 1 == goal.x && cur.y == goal.y)){
+               grid[ down + 1][cur.y] != 'X'){
             
             down++;
+            if(down == goal.x && cur.y == goal.y)
+                break;
         }
         
-        Point downNext( down, cur.y);
+        Point downNext( down, cur.y, cur.steps + 1);
         addNext( downNext, nexts, visited);
     }
     
@@ -71,13 +74,14 @@ vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>
     if( cur.x != 0){
         int up = cur.x;
         while( up - 1 >= 0 &&
-               grid[ up - 1][cur.y] != 'X' && 
-               !(up - 1 == goal.x && cur.y == goal.y)){
+               grid[ up - 1][cur.y] != 'X'){
             
             up--;
+            if(up == goal.x && cur.y == goal.y)
+                break;
         }
         
-        Point upNext( up, cur.y);
+        Point upNext( up, cur.y, cur.steps + 1);
         addNext( upNext, nexts, visited);
     }
     
@@ -100,7 +104,7 @@ int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goa
         Point cur = q.front();
         q.pop();
         
-        cout << "next: " << cur.x << "," << cur.y << endl;
+        //cout << "next: " << cur.x << "," << cur.y << endl;
         
         if( isGoal( cur, goal))
             return cur.steps;
@@ -148,7 +152,7 @@ int main()
 
     int result = minimumMoves(grid, startX, startY, goalX, goalY);
     
-    cout << "result: " << result << endl;
+    //cout << "result: " << result << endl;
 
     fout << result << "\n";
 
