@@ -15,21 +15,13 @@ bool isGoal( const Point& cur, const Point& goal){
     return ( cur.x == goal.x && cur.y == goal.y);
 }
 
-void addNext( Point point, vector<Point>& nexts, set<string>& visited){
-    if( visited.find( to_string( point.x) + "_" + to_string( point.y)) == visited.end()){
-        visited.insert( to_string( point.x) + "_" + to_string( point.y));
-        nexts.push_back( point);
-    }
-}
-
-vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>& grid, set<string>& visited){
+vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>& grid){
     vector<Point> nexts;
     
     // right
     if( cur.y < grid.size() - 1){
         Point next( cur);
-        while( next.y + 1 < grid.size() &&
-               grid[ next.x][next.y + 1] != 'X'){
+        while( next.y + 1 < grid.size() && grid[ next.x][next.y + 1] != 'X'){
             
             next.y++;
             if ( isGoal( next, goal))
@@ -37,14 +29,13 @@ vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>
         }
         
         next.steps++;
-        addNext( next, nexts, visited);
+        nexts.push_back( next);
     }
     
     // left
     if( cur.y > 0){
         Point next( cur);
-        while( next.y - 1 >= 0 &&
-               grid[ next.x][next.y - 1] != 'X'){
+        while( next.y - 1 >= 0 && grid[ next.x][next.y - 1] != 'X'){
 
             next.y--;
             if ( isGoal( next, goal))
@@ -52,14 +43,13 @@ vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>
         }
         
         next.steps++;
-        addNext( next, nexts, visited);
+        nexts.push_back( next);
     }
     
     // down
     if( cur.x < grid.size() - 1){
         Point next( cur);
-        while( next.x + 1 < grid.size() &&
-               grid[ next.x + 1][next.y] != 'X'){
+        while( next.x + 1 < grid.size() && grid[ next.x + 1][next.y] != 'X'){
             
             next.x++;
             if ( isGoal( next, goal))
@@ -67,14 +57,13 @@ vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>
         }
         
         next.steps++;
-        addNext( next, nexts, visited);
+        nexts.push_back( next);
     }
     
     // up
     if( cur.x > 0){
         Point next( cur);
-        while( next.x - 1 >= 0 &&
-               grid[ next.x - 1][next.y] != 'X'){
+        while( next.x - 1 >= 0 && grid[ next.x - 1][next.y] != 'X'){
             
             next.x--;
             if ( isGoal( next, goal))
@@ -82,7 +71,7 @@ vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>
         }
         
         next.steps++;
-        addNext( next, nexts, visited);
+        nexts.push_back( next);
     }
     
     return nexts;
@@ -98,7 +87,6 @@ int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goa
     Point goal( goalX, goalY);
     
     set<string> visited;
-    visited.insert( to_string( start.x) + "_" + to_string( start.y));
     
     while( !q.empty()){
         Point cur = q.front();
@@ -106,13 +94,16 @@ int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goa
         
         cout << "next: " << cur.x << "," << cur.y << endl;
         
+        visited.insert( to_string( cur.x) + "_" + to_string( cur.y));
+        
         if( isGoal( cur, goal))
             return cur.steps;
 
-        vector<Point> nexts = getNext( cur, goal, grid, visited);
+        vector<Point> nexts = getNext( cur, goal, grid);
 
         for( int i = 0; i < nexts.size(); i++){
-            q.push( nexts[ i]);
+            if( visited.find( to_string( nexts[ i].x) + "_" + to_string( nexts[ i].y)) == visited.end())
+                q.push( nexts[ i]);
         }
     }
 
