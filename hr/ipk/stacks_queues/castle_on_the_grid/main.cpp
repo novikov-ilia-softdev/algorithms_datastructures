@@ -5,7 +5,7 @@ using namespace std;
 vector<string> split_string(string);
 
 struct Point{
-    Point( int x_, int y_, int steps_ = 0): x( x_), y( y_), steps( steps_) {}
+    Point( int x_ = 0, int y_ = 0, int steps_ = 0): x( x_), y( y_), steps( steps_) {}
     int x;
     int y;
     int steps;
@@ -19,57 +19,61 @@ vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>
     vector<Point> nexts;
     
     // right
-    if( cur.y < grid.size() - 1){
-        Point next( cur);
-        while( next.y + 1 < grid.size() && grid[ next.x][next.y + 1] != 'X'){
-            
-            next.y++;
-            if ( isGoal( next, goal))
-                break;
-        }
-        
+    Point next( cur);
+    bool needToAdd = false;
+    while( next.y + 1 <= grid.size() - 1 && grid[ next.x][next.y + 1] != 'X'){
+        needToAdd = true;
+        next.y++;
+        if ( isGoal( next, goal))
+            break;
+    }
+    
+    if( needToAdd){
         next.steps++;
         nexts.push_back( next);
     }
     
     // left
-    if( cur.y > 0){
-        Point next( cur);
-        while( next.y - 1 >= 0 && grid[ next.x][next.y - 1] != 'X'){
-
-            next.y--;
-            if ( isGoal( next, goal))
-                break;
-        }
-        
+    next = cur;
+    needToAdd = false;
+    while( next.y - 1 >= 0 && grid[ next.x][next.y - 1] != 'X'){
+        needToAdd = true;
+        next.y--;
+        if ( isGoal( next, goal))
+            break;
+    }
+    
+    if( needToAdd){
         next.steps++;
         nexts.push_back( next);
     }
     
     // down
-    if( cur.x < grid.size() - 1){
-        Point next( cur);
-        while( next.x + 1 < grid.size() && grid[ next.x + 1][next.y] != 'X'){
-            
-            next.x++;
-            if ( isGoal( next, goal))
-                break;
-        }
-        
+    next = cur;
+    needToAdd = false;
+    while( next.x + 1 <= grid.size() - 1 && grid[ next.x + 1][next.y] != 'X'){
+        needToAdd = true;
+        next.x++;
+        if ( isGoal( next, goal))
+            break;
+    }
+    
+    if( needToAdd){
         next.steps++;
         nexts.push_back( next);
     }
     
     // up
-    if( cur.x > 0){
-        Point next( cur);
-        while( next.x - 1 >= 0 && grid[ next.x - 1][next.y] != 'X'){
-            
-            next.x--;
-            if ( isGoal( next, goal))
-                break;
-        }
-        
+    next = cur;
+    needToAdd = false;
+    while( next.x - 1 >= 0 && grid[ next.x - 1][next.y] != 'X'){
+        needToAdd = true;
+        next.x--;
+        if ( isGoal( next, goal))
+            break;
+    }
+    
+    if( needToAdd){
         next.steps++;
         nexts.push_back( next);
     }
@@ -92,7 +96,7 @@ int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goa
         Point cur = q.front();
         q.pop();
         
-        cout << "next: " << cur.x << "," << cur.y << endl;
+        //cout << "next: " << cur.x << "," << cur.y << endl;
         
         visited.insert( to_string( cur.x) + "_" + to_string( cur.y));
         
