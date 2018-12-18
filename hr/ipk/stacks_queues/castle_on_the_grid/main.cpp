@@ -9,7 +9,6 @@ struct Point{
     int x;
     int y;
     int steps;
-    vector<Point> path;
 };
 
 bool isGoal( const Point& cur, const Point& goal){
@@ -19,77 +18,68 @@ bool isGoal( const Point& cur, const Point& goal){
 vector<Point> getNext( const Point& cur, const Point& goal, const vector<string>& grid){
     vector<Point> nexts;
     Point next( cur);
-    bool needToAdd = false;
+    bool needToAdd = true;
     
     // right
     next = cur;
-    needToAdd = false;
+    needToAdd = true;
     while( next.y + 1 <= grid.size() - 1 && grid[ next.x][next.y + 1] != 'X'){
-        needToAdd = true;
+        if( needToAdd){
+            next.steps++;
+            needToAdd = false;
+        }
         next.y++;
+        nexts.push_back( next);
         if ( isGoal( next, goal))
             break;
-    }
-    
-    if( needToAdd){
-        next.steps++;
-        next.path.push_back( cur);
-        nexts.push_back( next);
     }
     
     // left
     next = cur;
-    needToAdd = false;
+    needToAdd = true;
     while( next.y - 1 >= 0 && grid[ next.x][next.y - 1] != 'X'){
-        needToAdd = true;
+        if( needToAdd){
+            next.steps++;
+            needToAdd = false;
+        }
         next.y--;
+        nexts.push_back( next);
         if ( isGoal( next, goal))
             break;
-    }
-    
-    if( needToAdd){
-        next.steps++;
-        next.path.push_back( cur);
-        nexts.push_back( next);
     }
     
     // down
     next = cur;
-    needToAdd = false;
+    needToAdd = true;
     while( next.x + 1 <= grid.size() - 1 && grid[ next.x + 1][next.y] != 'X'){
-        needToAdd = true;
+        if( needToAdd){
+            next.steps++;
+            needToAdd = false;
+        }
         next.x++;
+        nexts.push_back( next);
         if ( isGoal( next, goal))
             break;
-    }
-    
-    if( needToAdd){
-        next.steps++;
-        next.path.push_back( cur);
-        nexts.push_back( next);
     }
     
     // up
     next = cur;
-    needToAdd = false;
+    needToAdd = true;
     while( next.x - 1 >= 0 && grid[ next.x - 1][next.y] != 'X'){
-        needToAdd = true;
+        if( needToAdd){
+            next.steps++;
+            needToAdd = false;
+        }
         next.x--;
+        nexts.push_back( next);
         if ( isGoal( next, goal))
             break;
-    }
-    
-    if( needToAdd){
-        next.steps++;
-        next.path.push_back( cur);
-        nexts.push_back( next);
     }
     
     return nexts;
 }
 
 void printGrid( vector<string>& grid){
-    //cout << setw(3);
     for( int i = 0; i < grid.size(); i++){
         for( int j = 0; j < grid.size(); j++){
             cout << grid[i][j] << "  ";
@@ -104,8 +94,9 @@ int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goa
     
     Point start( startX, startY);
     q.push( start);
-    grid[startX][startY] = 'S';
-    grid[goalX][goalY] = 'F';
+    
+    //grid[startX][startY] = 'S';
+    //grid[goalX][goalY] = 'F';
     
     Point goal( goalX, goalY);
     
@@ -118,13 +109,14 @@ int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goa
         if( visited.find( to_string( cur.x) + "_" + to_string( cur.y)) != visited.end())
             continue;
         
-        cout << "cur: " << cur.x << "," << cur.y << " - " << cur.steps << endl;
+        //cout << "cur: " << cur.x << "," << cur.y << " - " << cur.steps << endl;
         //grid[ cur.x][cur.y] = 'P';
-        string s = to_string(cur.steps);
-        grid[ cur.x][cur.y] = *(s.c_str());
+        //string s = to_string(cur.steps);
+        //grid[ cur.x][cur.y] = *(s.c_str());
         //grid[ cur.x][cur.y] = 'P';
-        printGrid( grid);
-        cin.get();
+        //printGrid( grid);
+        //cin.get();
+        
         visited.insert( to_string( cur.x) + "_" + to_string( cur.y));
         
         if( isGoal( cur, goal)){
@@ -134,14 +126,6 @@ int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goa
         }
             
         vector<Point> nexts = getNext( cur, goal, grid);
-        
-        /*
-        if( cur.steps < 10){
-            string s = to_string(cur.steps);
-            grid[ cur.x][cur.y] = *(s.c_str());
-            //grid[ cur.x][cur.y] = cur.steps - 'a';
-        }
-        */
         
         for( int i = 0; i < nexts.size(); i++){
             if( visited.find( to_string( nexts[ i].x) + "_" + to_string( nexts[ i].y)) == visited.end())
@@ -185,7 +169,7 @@ int main()
 
     int result = minimumMoves(grid, startX, startY, goalX, goalY);
     
-    cout << "result: " << result << endl;
+    //cout << "result: " << result << endl;
 
     fout << result << "\n";
 
