@@ -115,11 +115,14 @@ int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goa
         Point cur = q.front();
         q.pop();
         
+        if( visited.find( to_string( cur.x) + "_" + to_string( cur.y)) != visited.end())
+            continue;
+        
         cout << "cur: " << cur.x << "," << cur.y << " - " << cur.steps << endl;
         //grid[ cur.x][cur.y] = 'P';
         string s = to_string(cur.steps);
-        //grid[ cur.x][cur.y] = *(s.c_str());
-        grid[ cur.x][cur.y] = 'P';
+        grid[ cur.x][cur.y] = *(s.c_str());
+        //grid[ cur.x][cur.y] = 'P';
         printGrid( grid);
         cin.get();
         visited.insert( to_string( cur.x) + "_" + to_string( cur.y));
@@ -152,7 +155,7 @@ int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goa
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input01.txt");
+    ifstream fin("input00.txt");
 
     int n;
     fin >> n;
