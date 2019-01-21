@@ -17,6 +17,7 @@ long getMaxOfMins( const vector<long>& arr, int windowSize){
 vector<long> riddle(vector<long> arr) {
     vector<long> res;
     for( int i = 1; i <= arr.size(); i++){
+        cout << getMaxOfMins( arr, i) << " ";
         res.push_back( getMaxOfMins( arr, i));
     }
 
@@ -68,8 +69,8 @@ vector<long> riddle(vector<long> arr) {
         
     }
     
-    //printFirstMap( firstMap);
-    //cout << endl;
+    printFirstMap( firstMap);
+    cout << endl;
     
     map<int, long> secondMap;
     for( auto firstIt = firstMap.begin(); firstIt != firstMap.end(); firstIt++){
@@ -81,8 +82,8 @@ vector<long> riddle(vector<long> arr) {
                 secondIt->second = firstIt->first;
     }
     
-    //printSecondMap( secondMap);
-    //cout << endl;
+    printSecondMap( secondMap);
+    cout << endl;
     
     long prev = secondMap.rbegin()->second;
     //cout << "prev: " << prev << endl;
@@ -101,10 +102,11 @@ vector<long> riddle(vector<long> arr) {
             
     }
     
-    //printSecondMap( secondMap);
-    //cout << endl;
+    printSecondMap( secondMap);
+    cout << endl;
     
     for( auto it = secondMap.begin(); it != secondMap.end(); it++){
+        cout << it->second << " ";
         res.push_back( it->second);
     }
     
@@ -115,7 +117,7 @@ vector<long> riddle(vector<long> arr) {
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input02.txt");
+    ifstream fin("input05.txt");
 
     int n;
     fin >> n;
