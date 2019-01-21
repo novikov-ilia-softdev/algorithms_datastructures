@@ -1,8 +1,10 @@
 #include <bits/stdc++.h>
+#include <map>
 using namespace std;
 
-vector<string> split_string(string);
+vector<string> split_string(string); 
 
+/*
 long getMaxOfMins( const vector<long>& arr, int windowSize){
     vector<long> mins;
     for( int i = 0; i < arr.size() && i + windowSize - 1 < arr.size(); i++){
@@ -20,11 +22,100 @@ vector<long> riddle(vector<long> arr) {
 
     return res;
 }
+*/
+
+int getMaxWindowSize( int i, const vector<long>& arr ){
+    int left = i;
+    
+    while( left > 0 && arr[left - 1] >= arr[i]){
+        left--;
+    }
+        
+    int right = i;
+    while( right < arr.size() - 1 && arr[right + 1] >= arr[i]){
+        right++;
+    }
+    
+    return right - left + 1;
+}
+
+void printFirstMap( const map<long, int>& m){
+    for( auto it = m.begin(); it != m.end(); it++){
+        cout << it->first << ": " << it->second << endl;
+    }
+}
+
+void printSecondMap( const map<int, long>& m){
+    for( auto it = m.begin(); it != m.end(); it++){
+        cout << it->first << ": " << it->second << endl;
+    }
+}
+
+vector<long> riddle(vector<long> arr) {
+    vector<long> res;
+    
+    map<long, int> firstMap;
+    
+    for( int i = 0; i < arr.size(); i++){
+        int windowSize = getMaxWindowSize( i, arr);
+        auto it = firstMap.find( arr[i]);
+        
+        if( it == firstMap.end())
+            firstMap.insert(make_pair( arr[i], windowSize));
+        else
+            if( windowSize > it->second)
+                it->second = windowSize;
+        
+    }
+    
+    //printFirstMap( firstMap);
+    //cout << endl;
+    
+    map<int, long> secondMap;
+    for( auto firstIt = firstMap.begin(); firstIt != firstMap.end(); firstIt++){
+        auto secondIt = secondMap.find( firstIt->second);
+        if( secondIt == secondMap.end())
+            secondMap.insert(make_pair( firstIt->second, firstIt->first));
+        else
+            if( firstIt->first > secondIt->second)
+                secondIt->second = firstIt->first;
+    }
+    
+    //printSecondMap( secondMap);
+    //cout << endl;
+    
+    long prev = secondMap.rbegin()->second;
+    //cout << "prev: " << prev << endl;
+    for( int i = arr.size(); i > 0; i--){
+        //cout << i << endl;
+        auto secondIt = secondMap.find( i);
+        if( secondIt == secondMap.end()){
+            //cout << "inserting" << endl;
+            secondMap.insert( make_pair( i, prev));
+        }
+            
+        else{
+            //cout << "update prev" << endl;
+            prev = secondIt->second;
+        }
+            
+    }
+    
+    //printSecondMap( secondMap);
+    //cout << endl;
+    
+    for( auto it = secondMap.begin(); it != secondMap.end(); it++){
+        res.push_back( it->second);
+    }
+    
+    return res;
+}
+
 
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input06.txt");
+    ifstream fin("input02.txt");
 
     int n;
     fin >> n;
