@@ -57,6 +57,7 @@ vector<long> riddle(vector<long> arr) {
     
     map<long, int> firstMap;
     
+    // create first map
     for( int i = 0; i < arr.size(); i++){
         int windowSize = getMaxWindowSize( i, arr);
         auto it = firstMap.find( arr[i]);
@@ -66,12 +67,12 @@ vector<long> riddle(vector<long> arr) {
         else
             if( windowSize > it->second)
                 it->second = windowSize;
-        
     }
     
-    printFirstMap( firstMap);
-    cout << endl;
+    //printFirstMap( firstMap);
+    //cout << endl;
     
+    // create second map
     map<int, long> secondMap;
     for( auto firstIt = firstMap.begin(); firstIt != firstMap.end(); firstIt++){
         auto secondIt = secondMap.find( firstIt->second);
@@ -80,11 +81,21 @@ vector<long> riddle(vector<long> arr) {
         else
             if( firstIt->first > secondIt->second)
                 secondIt->second = firstIt->first;
+            
+        // correct second map
+        for( auto it = secondMap.begin(); it != secondMap.end(); it++){
+            if( it->first < firstIt->second && it->second < firstIt->first)
+                it->second = firstIt->first;
+        }
     }
     
-    printSecondMap( secondMap);
-    cout << endl;
+    //printSecondMap( secondMap);
+    //cout << endl;
     
+    
+    
+    
+    // fill gapes in second map
     long prev = secondMap.rbegin()->second;
     //cout << "prev: " << prev << endl;
     for( int i = arr.size(); i > 0; i--){
@@ -102,11 +113,13 @@ vector<long> riddle(vector<long> arr) {
             
     }
     
-    printSecondMap( secondMap);
-    cout << endl;
+    //printSecondMap( secondMap);
+    //cout << endl;
     
+    
+    // create result
     for( auto it = secondMap.begin(); it != secondMap.end(); it++){
-        cout << it->second << " ";
+        //cout << it->second << " ";
         res.push_back( it->second);
     }
     
