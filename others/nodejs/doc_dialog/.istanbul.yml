@@ -1,0 +1,5 @@
+# node_modules/.bin/istanbul help config
+instrumentation:
+  root: ./lib
+reporting:
+  dir: ./test_coverage

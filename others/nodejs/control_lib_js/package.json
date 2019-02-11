@@ -1,0 +1,28 @@
+{
+  "name": "control_lib_js",
+  "version": "1.2.0",
+  "private": true,
+  "description": "Control Lib JS",
+  "main": "index.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": "",
+  "keywords": [
+    "Node.js",
+    "Eclipse",
+    "Nodeclipse"
+  ],
+  "author": "Smart Tecnologis",
+  "dependencies": {
+      "control_serialization_lib": "*",
+      "unix-dgram": "*",
+      "wgdb": "*",
+      "mocha": "*"
+  },
+  "engines": [
+	  "node >= 0.10.25"
+  ],
+  "license": "BSD",
+  "readmeFilename": "README.md"
+}

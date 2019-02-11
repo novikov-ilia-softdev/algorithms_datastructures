@@ -1,0 +1,9 @@
+.idea
+.vscode
+/node_modules/
+/config.override.js
+/jsconfig.json
+
+/test_coverage/*
+!/test_coverage/.dont_delete
+db/ttscache.json
