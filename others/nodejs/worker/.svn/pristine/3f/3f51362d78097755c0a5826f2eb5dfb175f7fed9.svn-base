@@ -1,0 +1,10 @@
+{
+	"ScriptType": "Worker",
+	"RequiredControlObjectList": [],
+	"RunScriptTermList": [
+	 ],
+	"LowerPriorityAccessScriptList": [],
+	"InstanceCount": "1",
+  	"InterruptedScriptList": [],
+  	"InterrupterScriptList": []
+}
