@@ -40,86 +40,55 @@ int getMaxWindowSize( int i, const vector<long>& arr ){
     return right - left + 1;
 }
 
-void printFirstMap( const map<long, int>& m){
-    for( auto it = m.begin(); it != m.end(); it++){
-        cout << it->first << ": " << it->second << endl;
-    }
-}
-
-void printSecondMap( const map<int, long>& m){
-    for( auto it = m.begin(); it != m.end(); it++){
-        cout << it->first << ": " << it->second << endl;
-    }
-}
+typedef map<long, long> LongOnLongMap;
 
 vector<long> riddle(vector<long> arr) {
     vector<long> res;
     
-    map<long, int> firstMap;
-    
     // create first map
+    LongOnLongMap minValueOnMaxWindowSizeMap;
     for( int i = 0; i < arr.size(); i++){
+        int val = arr[ i];
         int windowSize = getMaxWindowSize( i, arr);
-        auto it = firstMap.find( arr[i]);
         
-        if( it == firstMap.end())
-            firstMap.insert(make_pair( arr[i], windowSize));
+        if( minValueOnMaxWindowSizeMap.count( val) == 0)
+            minValueOnMaxWindowSizeMap[ val] = windowSize;
         else
-            if( windowSize > it->second)
-                it->second = windowSize;
+            if( windowSize > minValueOnMaxWindowSizeMap[ val])
+                minValueOnMaxWindowSizeMap[ val] = windowSize;
     }
-    
-    //printFirstMap( firstMap);
-    //cout << endl;
     
     // create second map
-    map<int, long> secondMap;
-    for( auto firstIt = firstMap.begin(); firstIt != firstMap.end(); firstIt++){
-        auto secondIt = secondMap.find( firstIt->second);
-        if( secondIt == secondMap.end())
-            secondMap.insert(make_pair( firstIt->second, firstIt->first));
+    LongOnLongMap maxWindowSizeOnMinValueMap;
+    for( auto it = minValueOnMaxWindowSizeMap.begin(); it != minValueOnMaxWindowSizeMap.end(); it++){
+        int val = it->first;
+        int winSize = it->second;
+        if( maxWindowSizeOnMinValueMap.count( winSize))
+            maxWindowSizeOnMinValueMap[ winSize] = val;
         else
-            if( firstIt->first > secondIt->second)
-                secondIt->second = firstIt->first;
+            if( val > maxWindowSizeOnMinValueMap[ winSize])
+                maxWindowSizeOnMinValueMap[ winSize] = val;
             
         // correct second map
-        for( auto it = secondMap.begin(); it != secondMap.end(); it++){
-            if( it->first < firstIt->second && it->second < firstIt->first)
-                it->second = firstIt->first;
+        for( auto it = maxWindowSizeOnMinValueMap.begin(); it != maxWindowSizeOnMinValueMap.end(); it++){
+            if( it->first < winSize && it->second < val)
+                it->second = val;
         }
     }
-    
-    //printSecondMap( secondMap);
-    //cout << endl;
-    
-    
-    
     
     // fill gapes in second map
-    long prev = secondMap.rbegin()->second;
-    //cout << "prev: " << prev << endl;
+    long prev = maxWindowSizeOnMinValueMap.rbegin()->second;
     for( int i = arr.size(); i > 0; i--){
-        //cout << i << endl;
-        auto secondIt = secondMap.find( i);
-        if( secondIt == secondMap.end()){
-            //cout << "inserting" << endl;
-            secondMap.insert( make_pair( i, prev));
-        }
+        auto it = maxWindowSizeOnMinValueMap.find( i);
+        if( it == maxWindowSizeOnMinValueMap.end())
+            maxWindowSizeOnMinValueMap.insert( make_pair( i, prev));
             
-        else{
-            //cout << "update prev" << endl;
-            prev = secondIt->second;
-        }
+        else
+            prev = it->second;
             
     }
     
-    //printSecondMap( secondMap);
-    //cout << endl;
-    
-    
-    // create result
-    for( auto it = secondMap.begin(); it != secondMap.end(); it++){
-        //cout << it->second << " ";
+    for( auto it = maxWindowSizeOnMinValueMap.begin(); it != maxWindowSizeOnMinValueMap.end(); it++){
         res.push_back( it->second);
     }
     
