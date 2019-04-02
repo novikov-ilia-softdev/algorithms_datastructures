@@ -42,59 +42,70 @@ int getMaxWindowSize( int i, const vector<long>& arr ){
 
 typedef map<long, long> LongOnLongMap;
 
-vector<long> riddle(vector<long> arr) {
-    vector<long> res;
-    
-    // create first map
-    LongOnLongMap minValueOnMaxWindowSizeMap;
+void fillMap( LongOnLongMap& srcMap, vector<long>& arr){
     for( int i = 0; i < arr.size(); i++){
         int val = arr[ i];
         int windowSize = getMaxWindowSize( i, arr);
         
-        if( minValueOnMaxWindowSizeMap.count( val) == 0)
-            minValueOnMaxWindowSizeMap[ val] = windowSize;
+        if( srcMap.count( val) == 0)
+            srcMap[ val] = windowSize;
         else
-            if( windowSize > minValueOnMaxWindowSizeMap[ val])
-                minValueOnMaxWindowSizeMap[ val] = windowSize;
+            if( windowSize > srcMap[ val])
+                srcMap[ val] = windowSize;
     }
-    
-    // create second map
-    LongOnLongMap maxWindowSizeOnMinValueMap;
-    for( auto it = minValueOnMaxWindowSizeMap.begin(); it != minValueOnMaxWindowSizeMap.end(); it++){
+}
+
+void invertMap( LongOnLongMap& srcMap, LongOnLongMap& dstMap){
+    for( auto it = srcMap.begin(); it != srcMap.end(); it++){
         int val = it->first;
         int winSize = it->second;
-        if( maxWindowSizeOnMinValueMap.count( winSize))
-            maxWindowSizeOnMinValueMap[ winSize] = val;
+        if( dstMap.count( winSize))
+            dstMap[ winSize] = val;
         else
-            if( val > maxWindowSizeOnMinValueMap[ winSize])
-                maxWindowSizeOnMinValueMap[ winSize] = val;
+            if( val > dstMap[ winSize])
+                dstMap[ winSize] = val;
             
         // correct second map
-        for( auto it = maxWindowSizeOnMinValueMap.begin(); it != maxWindowSizeOnMinValueMap.end(); it++){
+        for( auto it = dstMap.begin(); it != dstMap.end(); it++){
             if( it->first < winSize && it->second < val)
                 it->second = val;
         }
     }
-    
-    // fill gapes in second map
-    long prev = maxWindowSizeOnMinValueMap.rbegin()->second;
+}
+
+void fillGapes( LongOnLongMap& srcMap, vector<long> arr){
+    long prev = srcMap.rbegin()->second;
     for( int i = arr.size(); i > 0; i--){
-        auto it = maxWindowSizeOnMinValueMap.find( i);
-        if( it == maxWindowSizeOnMinValueMap.end())
-            maxWindowSizeOnMinValueMap.insert( make_pair( i, prev));
-            
+        auto it = srcMap.find( i);
+        if( it == srcMap.end())
+            srcMap.insert( make_pair( i, prev));
         else
             prev = it->second;
             
     }
-    
-    for( auto it = maxWindowSizeOnMinValueMap.begin(); it != maxWindowSizeOnMinValueMap.end(); it++){
-        res.push_back( it->second);
+}
+
+void createResult( LongOnLongMap& srcMap, vector<long>& vec){
+    for( auto it = srcMap.begin(); it != srcMap.end(); it++){
+        vec.push_back( it->second);
     }
+}
+
+vector<long> riddle(vector<long> arr) {
+    
+    LongOnLongMap minValueOnMaxWindowSizeMap;
+    fillMap( minValueOnMaxWindowSizeMap, arr);
+    
+    LongOnLongMap maxWindowSizeOnMinValueMap;
+    invertMap( minValueOnMaxWindowSizeMap, maxWindowSizeOnMinValueMap);
+    
+    fillGapes( maxWindowSizeOnMinValueMap, arr);
+    
+    vector<long> res;
+    createResult( maxWindowSizeOnMinValueMap, res);
     
     return res;
 }
-
 
 int main()
 {
