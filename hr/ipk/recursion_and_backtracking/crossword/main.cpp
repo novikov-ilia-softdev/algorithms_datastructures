@@ -11,23 +11,27 @@ void solveCrosswordRecursive( crossword, solvedCrossword, gaps, words){
 	return true;
     
     for( auto word in words){
-	fillGap( gaps[ 0], word);
-	deleteGap( gaps[ 0]);
-	deleteWord
-	if( solveCrosswordRecursive( crossword, gaps, words))
-	    return;
+	if( isWordSuitsGap( word, gaps[ 0])){
+	    deleteGap( gaps[ 0]);
+	    deleteWord( word);
+	}
+	
+	return solveCrosswordRecursive( crossword, gaps++, word++)
     }
     
-    return false
+    return false;
 }
 
 vector<string> crosswordPuzzle(vector<string> crossword, string words) {
     vector<Gap> gaps = getGaps( crossword);
     
-    vector<string> solvedCrossword = crossword;
-    solveCrosswordRecursive( crossword, gaps, words);
+    for( auto word in words){
+	vector<string> solvedCrossword = crossword;
+	if( solveCrosswordRecursive( crossword, gaps, word, words))
+	    return solvedCrossword;
+    }
     
-    return solvedCrossword;
+    return crossword;
 }
 
 int main()
