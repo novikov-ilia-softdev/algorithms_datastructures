@@ -2,12 +2,64 @@
 
 using namespace std;
 
-// TODO
-class Gap
-getGaps
+struct Point{
+  int i;
+  int j;
+};
+
+struct Gap{
+    Point start;
+    Point end;
+    int length;
+};
+
+typedef vector<string> Crossword;
+typedef vector<Gap> Gaps;
+
+int moveRight( int i, int j, const Crossword& crossword){
+    
+    while( j < crossword[ i].size() - 1 && crossword[ i][j + 1] != '+'){
+        j++;
+    }
+    
+    return j;
+}
+
+int moveDown( int i, int j, const Crossword& crossword){
+    
+    while( i < crossword.size() - 1 && crossword[ i + 1][j] != '+'){
+        i++;
+    }
+    
+    return i;
+}
+
+Gaps getGaps( const Crossword& crossword){
+    Gaps gaps;
+    
+    for( int i = 0; i < crossword.size(); i++){
+        cout << "i: " << i << endl;
+        cout << "crossword[ i]: " << crossword[ i] << endl;
+        for( int j = 0; j < crossword[ i].size(); j++){
+            if( crossword[ i][ j] != '+'){
+                int right = moveRight( i, j, crossword);
+                if( right != j)
+                    cout << i << "," << j << " -> " << i << "," << right << endl;
+                int down = moveDown( i, j, crossword);
+                if( down != j)
+                    cout << i << "," << j << " -> " << down << "," << j << endl;
+            }
+        }
+    }
+    
+    return gaps;
+}
+
+/*
 isWordSuitsGap
 deleteGap
 deleteWord
+
 
 void solveCrosswordRecursive( solvedCrossword, gaps, wordCandidate, words){
     if( !gaps.size())
@@ -24,15 +76,24 @@ void solveCrosswordRecursive( solvedCrossword, gaps, wordCandidate, words){
     
     return false;
 }
+*/
 
 vector<string> crosswordPuzzle(vector<string> crossword, string words) {
-    vector<Gap> gaps = getGaps( crossword);
+    cout << "Hi" << endl;
+    cout << crossword[ 0] << endl;
     
+    Gaps gaps = getGaps( crossword);
+    
+    
+    //DebugUtils::printGaps( gaps);
+    
+    /*
     for( auto word in words){
 	vector<string> solvedCrossword = crossword;
 	if( solveCrosswordRecursive( solvedCrossword, gaps, word, words))
 	    return solvedCrossword;
     }
+    */
     
     return crossword;
 }
