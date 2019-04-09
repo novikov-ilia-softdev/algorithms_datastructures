@@ -101,6 +101,10 @@ public:
         }
     }
     
+    static void printGap( const Gap& gap){
+	cout << gap.start.i << "," << gap.start.j << " -> " << gap.end.i << "," << gap.end.j << " (" << gap.getLength() << ")" << endl;
+    }
+    
     static void printWords( const Words& words){
         for( auto& word : words){
             cout << word << endl;
@@ -167,24 +171,31 @@ bool solveCrosswordRecursive( Crossword& solvedCrossword, Gaps gaps, string word
     
     //cout << "solveCrosswordRecursive" << endl;
     //cout << "gaps.size(): " << gaps.size() << endl;
+    //DebugUtils::printGap( gaps[0]);
     //cout << "wordCandidate: " << wordCandidate << endl;
     if( !gaps.size())
 	return true;
     
-    if( !isWordSuitsGap( wordCandidate, gaps[ 0], solvedCrossword))
-	return false;
+    if( isWordSuitsGap( wordCandidate, gaps[ 0], solvedCrossword)){
+	fillGap( solvedCrossword, gaps[ 0], wordCandidate);
+	gaps.erase( gaps.begin());
     
-    fillGap( solvedCrossword, gaps[ 0], wordCandidate);
-    gaps.erase( gaps.begin());
-    auto it = find(words.begin(), words.end(), wordCandidate);
-    if (it != words.end()) words.erase(it);
+	if( !gaps.size())
+	    return true;
     
-    if( !gaps.size())
-	return true;
-    
+	auto it = find(words.begin(), words.end(), wordCandidate);
+	if (it != words.end()) words.erase(it);
+    }
+    else{
+	//auto it = find(words.begin(), words.end(), wordCandidate);
+	//if (it != words.end()) words.erase(it);
+	//words.push_back( wordCandidate);
+    }
     //DebugUtils::printGaps( gaps);
     //DebugUtils::printWords( words);
     //DebugUtils::printCrossword( solvedCrossword);
+    //string temp;
+    //getline(cin, temp);
     
     for( auto& word : words){
 	if( solveCrosswordRecursive( solvedCrossword, gaps, word, words))
@@ -214,6 +225,7 @@ vector<string> crosswordPuzzle(vector<string> crossword, string words) {
     
     for( auto& word : splittedWords){
 	Crossword solvedCrossword = crossword;
+	//cout << word << endl;
 	if( solveCrosswordRecursive( solvedCrossword, gaps, word, splittedWords)){
 	    //DebugUtils::printCrossword( solvedCrossword);
 	    return solvedCrossword;
@@ -227,7 +239,7 @@ vector<string> crosswordPuzzle(vector<string> crossword, string words) {
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input00.txt");
+    ifstream fin("input06.txt");
 
     vector<string> crossword(10);
 
