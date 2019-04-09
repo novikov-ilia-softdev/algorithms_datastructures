@@ -183,6 +183,9 @@ bool solveCrosswordRecursive( Crossword& solvedCrossword, Gaps gaps, string word
         gaps.erase( gaps.begin());
         auto it = find(words.begin(), words.end(), wordCandidate);
         if (it != words.end()) words.erase(it);
+        
+        DebugUtils::printGaps( gaps);
+        DebugUtils::printWords( words);
     }
     
     DebugUtils::printCrossword( solvedCrossword);
