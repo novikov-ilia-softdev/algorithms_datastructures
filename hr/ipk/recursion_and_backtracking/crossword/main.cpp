@@ -15,39 +15,57 @@ struct Gap{
 
 typedef vector<string> Crossword;
 typedef vector<Gap> Gaps;
+typedef set<string> Visited;
 
-int moveRight( int i, int j, const Crossword& crossword){
+
+string createKey( int i, int j){
+    return to_string( i) + "_" + to_string( j);
+}
+
+int moveRight( int i, int j, const Crossword& crossword, Visited& visited){
     
     while( j < crossword[ i].size() - 1 && crossword[ i][j + 1] != '+'){
         j++;
+        visited.insert( createKey( i, j));
     }
     
     return j;
 }
 
-int moveDown( int i, int j, const Crossword& crossword){
+int moveDown( int i, int j, const Crossword& crossword, Visited& visited){
     
     while( i < crossword.size() - 1 && crossword[ i + 1][j] != '+'){
         i++;
+        visited.insert( createKey( i, j));
     }
     
     return i;
 }
 
+
 Gaps getGaps( const Crossword& crossword){
     Gaps gaps;
     
+    set<string> visitedRight;
+    set<string> visitedDown;
+    
     for( int i = 0; i < crossword.size(); i++){
-        cout << "i: " << i << endl;
-        cout << "crossword[ i]: " << crossword[ i] << endl;
         for( int j = 0; j < crossword[ i].size(); j++){
             if( crossword[ i][ j] != '+'){
-                int right = moveRight( i, j, crossword);
-                if( right != j)
-                    cout << i << "," << j << " -> " << i << "," << right << endl;
-                int down = moveDown( i, j, crossword);
-                if( down != j)
-                    cout << i << "," << j << " -> " << down << "," << j << endl;
+                if( visitedRight.find( createKey( i, j)) == visitedRight.end()){
+                    visitedRight.insert( createKey( i, j));
+                    int right = moveRight( i, j, crossword, visitedRight);
+                    if( right != j)
+                        cout << i << "," << j << " -> " << i << "," << right << endl;
+                }
+                
+                if( visitedDown.find( createKey( i, j)) == visitedDown.end()){
+                    visitedDown.insert( createKey( i, j));
+                    int down = moveDown( i, j, crossword, visitedDown);
+                    if( down != i)
+                        cout << i << "," << j << " -> " << down << "," << j << endl;
+                }
+                
             }
         }
     }
@@ -59,7 +77,6 @@ Gaps getGaps( const Crossword& crossword){
 isWordSuitsGap
 deleteGap
 deleteWord
-
 
 void solveCrosswordRecursive( solvedCrossword, gaps, wordCandidate, words){
     if( !gaps.size())
@@ -79,9 +96,6 @@ void solveCrosswordRecursive( solvedCrossword, gaps, wordCandidate, words){
 */
 
 vector<string> crosswordPuzzle(vector<string> crossword, string words) {
-    cout << "Hi" << endl;
-    cout << crossword[ 0] << endl;
-    
     Gaps gaps = getGaps( crossword);
     
     
@@ -101,7 +115,7 @@ vector<string> crosswordPuzzle(vector<string> crossword, string words) {
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin(getenv("input00.txt"));
+    ifstream fin("input00.txt");
 
     vector<string> crossword(10);
 
