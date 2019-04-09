@@ -2,21 +2,24 @@
 
 using namespace std;
 
-class Gap{
-    
-};
+// TODO
+class Gap
+getGaps
+isWordSuitsGap
+deleteGap
+deleteWord
 
-void solveCrosswordRecursive( crossword, solvedCrossword, gaps, words){
+void solveCrosswordRecursive( solvedCrossword, gaps, wordCandidate, words){
     if( !gaps.size())
 	return true;
     
+    if( isWordSuitsGap( wordCandidate, gaps[ 0])){
+        deleteGap( gaps[ 0]);
+        deleteWord( wordCandidate, words);
+    }
+    
     for( auto word in words){
-	if( isWordSuitsGap( word, gaps[ 0])){
-	    deleteGap( gaps[ 0]);
-	    deleteWord( word);
-	}
-	
-	return solveCrosswordRecursive( crossword, gaps++, word++)
+	return solveCrosswordRecursive( solvedCrossword, gaps, word, words)
     }
     
     return false;
@@ -27,7 +30,7 @@ vector<string> crosswordPuzzle(vector<string> crossword, string words) {
     
     for( auto word in words){
 	vector<string> solvedCrossword = crossword;
-	if( solveCrosswordRecursive( crossword, gaps, word, words))
+	if( solveCrosswordRecursive( solvedCrossword, gaps, word, words))
 	    return solvedCrossword;
     }
     
