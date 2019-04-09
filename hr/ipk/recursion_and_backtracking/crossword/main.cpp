@@ -33,7 +33,7 @@ string createKey( int i, int j){
 
 int moveRight( int i, int j, const Crossword& crossword, Visited& visited){
     
-    while( j < crossword[ i].size() - 1 && crossword[ i][j + 1] != '+'){
+    while( j < crossword[ i].size() - 1 && (crossword[ i][j + 1] != '+' && crossword[ i][j + 1] != 'X')){
         j++;
         visited.insert( createKey( i, j));
     }
@@ -43,7 +43,7 @@ int moveRight( int i, int j, const Crossword& crossword, Visited& visited){
 
 int moveDown( int i, int j, const Crossword& crossword, Visited& visited){
     
-    while( i < crossword.size() - 1 && crossword[ i + 1][j] != '+'){
+    while( i < crossword.size() - 1 && (crossword[ i + 1][j] != '+' && crossword[ i + 1][j] != 'X')){
         i++;
         visited.insert( createKey( i, j));
     }
@@ -60,7 +60,7 @@ Gaps getGaps( const Crossword& crossword){
     
     for( int i = 0; i < crossword.size(); i++){
         for( int j = 0; j < crossword[ i].size(); j++){
-            if( crossword[ i][ j] != '+'){
+            if( crossword[ i][ j] != '+' && crossword[ i][ j] != 'X'){
                 if( visitedRight.find( createKey( i, j)) == visitedRight.end()){
                     visitedRight.insert( createKey( i, j));
                     int right = moveRight( i, j, crossword, visitedRight);
@@ -115,12 +115,6 @@ public:
     }
 };
 
-/*
-isWordSuitsGap
-deleteGap
-deleteWord
-*/
-
 string getGapValue( Gap gap, const Crossword& solvedCrossword){
     string res = "";
     
@@ -174,32 +168,31 @@ bool solveCrosswordRecursive( Crossword& solvedCrossword, Gaps gaps, string word
     //cout << "solveCrosswordRecursive" << endl;
     //cout << "gaps.size(): " << gaps.size() << endl;
     //cout << "wordCandidate: " << wordCandidate << endl;
+    if( !gaps.size())
+	return true;
+    
+    if( !isWordSuitsGap( wordCandidate, gaps[ 0], solvedCrossword))
+	return false;
+    
+    fillGap( solvedCrossword, gaps[ 0], wordCandidate);
+    gaps.erase( gaps.begin());
+    auto it = find(words.begin(), words.end(), wordCandidate);
+    if (it != words.end()) words.erase(it);
     
     if( !gaps.size())
 	return true;
     
-    if( isWordSuitsGap( wordCandidate, gaps[ 0], solvedCrossword)){
-        fillGap( solvedCrossword, gaps[ 0], wordCandidate);
-        gaps.erase( gaps.begin());
-        auto it = find(words.begin(), words.end(), wordCandidate);
-        if (it != words.end()) words.erase(it);
-        
-        DebugUtils::printGaps( gaps);
-        DebugUtils::printWords( words);
-    }
+    //DebugUtils::printGaps( gaps);
+    //DebugUtils::printWords( words);
+    //DebugUtils::printCrossword( solvedCrossword);
     
-    DebugUtils::printCrossword( solvedCrossword);
-    
-    /*
     for( auto& word : words){
 	if( solveCrosswordRecursive( solvedCrossword, gaps, word, words))
             return true;
     }
-    */
     
     return false;
 }
-
 
 Words split(const string &s, char delim) {
     stringstream ss(s);
@@ -214,15 +207,18 @@ Words split(const string &s, char delim) {
 
 vector<string> crosswordPuzzle(vector<string> crossword, string words) {
     Gaps gaps = getGaps( crossword);
-    DebugUtils::printGaps( gaps);
+    //DebugUtils::printGaps( gaps);
     
     Words splittedWords = split( words, ';');
-    DebugUtils::printWords( splittedWords);
+    //DebugUtils::printWords( splittedWords);
     
     for( auto& word : splittedWords){
 	Crossword solvedCrossword = crossword;
-	if( solveCrosswordRecursive( solvedCrossword, gaps, word, splittedWords))
+	if( solveCrosswordRecursive( solvedCrossword, gaps, word, splittedWords)){
+	    //DebugUtils::printCrossword( solvedCrossword);
 	    return solvedCrossword;
+	}
+	    
     }
     
     return crossword;
