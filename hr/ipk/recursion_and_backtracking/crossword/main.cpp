@@ -167,39 +167,50 @@ void fillGap( Crossword& solvedCrossword, Gap gap, string word){
     }
 }
 
-bool solveCrosswordRecursive( Crossword& solvedCrossword, Gaps gaps, string wordCandidate, Words words){
+bool solveCrosswordRecursive( Crossword& solvedCrossword, Gap gap, Gaps gaps, string wordCandidate, Words words){
     
     //cout << "solveCrosswordRecursive" << endl;
     //cout << "gaps.size(): " << gaps.size() << endl;
-    //DebugUtils::printGap( gaps[0]);
+    //DebugUtils::printGap( gap);
     //cout << "wordCandidate: " << wordCandidate << endl;
     if( !gaps.size())
 	return true;
     
-    if( isWordSuitsGap( wordCandidate, gaps[ 0], solvedCrossword)){
-	fillGap( solvedCrossword, gaps[ 0], wordCandidate);
-	gaps.erase( gaps.begin());
+    if( !isWordSuitsGap( wordCandidate, gap, solvedCrossword))
+        return false;
     
-	if( !gaps.size())
-	    return true;
+    fillGap( solvedCrossword, gap, wordCandidate);
     
-	auto it = find(words.begin(), words.end(), wordCandidate);
-	if (it != words.end()) words.erase(it);
+    
+    for( auto it = gaps.begin(); it != gaps.end(); ++it){
+        if( it->start.i == gap.start.i &&
+            it->start.j == gap.start.j &&
+            it->end.i == gap.end.i &&
+            it->end.j == gap.end.j
+        ){
+            gaps.erase( it);
+            break;
+        }
     }
-    else{
-	//auto it = find(words.begin(), words.end(), wordCandidate);
-	//if (it != words.end()) words.erase(it);
-	//words.push_back( wordCandidate);
-    }
-    //DebugUtils::printGaps( gaps);
-    //DebugUtils::printWords( words);
+    
     //DebugUtils::printCrossword( solvedCrossword);
-    //string temp;
-    //getline(cin, temp);
+    //DebugUtils::printGap( gap);
+    //cout << "gaps.size(): " << gaps.size() << endl;
+    //DebugUtils::printGaps( gaps);
+    //cin.get();
     
-    for( auto& word : words){
-	if( solveCrosswordRecursive( solvedCrossword, gaps, word, words))
-            return true;
+    if( !gaps.size())
+        return true;
+
+    auto it = find(words.begin(), words.end(), wordCandidate);
+    if (it != words.end()) words.erase(it);
+    
+    for( auto& gap : gaps){
+        for( auto& word : words){
+            if( solveCrosswordRecursive( solvedCrossword, gap, gaps, word, words)){
+                return true;
+            }
+        }
     }
     
     return false;
@@ -222,16 +233,18 @@ vector<string> crosswordPuzzle(vector<string> crossword, string words) {
     
     Words splittedWords = split( words, ';');
     //DebugUtils::printWords( splittedWords);
-    
-    for( auto& word : splittedWords){
-	Crossword solvedCrossword = crossword;
+    for( auto& gap : gaps){
+        for( auto& word : splittedWords){
+            Crossword solvedCrossword = crossword;
 	//cout << word << endl;
-	if( solveCrosswordRecursive( solvedCrossword, gaps, word, splittedWords)){
-	    //DebugUtils::printCrossword( solvedCrossword);
-	    return solvedCrossword;
-	}
-	    
+            if( solveCrosswordRecursive( solvedCrossword, gap, gaps, word, splittedWords)){
+                //DebugUtils::printCrossword( solvedCrossword);
+                return solvedCrossword;
+            }
+        }
     }
+    
+    
     
     return crossword;
 }
@@ -239,7 +252,7 @@ vector<string> crosswordPuzzle(vector<string> crossword, string words) {
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input06.txt");
+    ifstream fin("input02.txt");
 
     vector<string> crossword(10);
 
