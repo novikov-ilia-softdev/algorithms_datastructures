@@ -4,6 +4,7 @@ using namespace std;
 
 vector<string> split_string(string);
 
+/*
 // Brute force
 vector<int> maxXor(vector<int> arr, vector<int> queries) {
     vector<int> res;
@@ -21,21 +22,105 @@ vector<int> maxXor(vector<int> arr, vector<int> queries) {
     
     return res;
 }
+*/
 
 // TODO
 // create trie
 // make search of inversion
 
+
+struct Node{
+    int value;
+    Node* left;
+    Node* right;
+    
+    Node( int val): value( val) {}
+};
+
+Node* insert( Node* node, int n, int count){
+    cout << "insert" << endl;
+    cin.get();
+    
+    if( count == 8 * sizeof( n)){
+        cout << "count" << endl;
+        return node;
+    }
+        
+    
+    if( !node){
+        cout << "!node" << endl;
+        node = new Node( n & 1);
+        return node;
+    }
+    
+    n = n >> 1;
+    
+    if( n & 1)
+        node->right = insert( node->right, n, count + 1);
+    else
+        node->left = insert( node->left, n, count + 1);
+    
+    return node;
+}
+
+class DebugUtils{
+public:
+    static void printBinary( int n){
+        for( int i = 0; i < 8 * sizeof( n); i++){
+            //cout << i;
+            cout << (n & 1);
+            n = n >> 1;
+        }
+        cout << endl;
+    }
+    
+    static void printTree( Node* node){
+        if( !node)
+            return;
+        
+        printTree( node->left);
+        cout << node->value << " ";
+        printTree( node->right);
+    }
+};
+
+vector<int> maxXor(vector<int> arr, vector<int> queries) {
+    
+    Node* root = new Node( 2);
+    for( auto& n : arr){
+        cout << n;
+        DebugUtils::printBinary( n);
+        cin.get();
+        insert( root, n, 8 * sizeof( n));
+    }
+    
+    DebugUtils::printTree( root);
+    
+    /*
+    DebugUtils::printTrie( trie);
+    
+    vector<int> res;
+    for( auto& query : queries){
+        res.push_back( trie.get( query));
+    }
+    
+    return res;
+    */
+    
+    return arr;
+}
+
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
+    ifstream fin("input00.txt");
 
     int n;
-    cin >> n;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    fin >> n;
+    fin.ignore(numeric_limits<streamsize>::max(), '\n');
 
     string arr_temp_temp;
-    getline(cin, arr_temp_temp);
+    getline(fin, arr_temp_temp);
 
     vector<string> arr_temp = split_string(arr_temp_temp);
 
@@ -48,15 +133,15 @@ int main()
     }
 
     int m;
-    cin >> m;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    fin >> m;
+    fin.ignore(numeric_limits<streamsize>::max(), '\n');
 
     vector<int> queries(m);
 
     for (int i = 0; i < m; i++) {
         int queries_item;
-        cin >> queries_item;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        fin >> queries_item;
+        fin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         queries[i] = queries_item;
     }
