@@ -37,6 +37,28 @@ struct Node{
     Node( int val): value( val) {}
 };
 
+void insert( Node* node, int n, int count){
+    if( count == 8 * sizeof( n))
+	return;
+    
+    if( count)
+	n = n >> 1;
+    
+    if( n & 1){
+        if( !node->right)
+	    node->right = new Node( n);
+	    
+	insert( node->right, n, count + 1);
+    }   
+    else{
+        if( !node->left)
+	    node->left = new Node( n);
+	    
+	insert( node->left, n, count + 1);
+    }
+}
+
+/*
 Node* insert( Node* node, int n, int count){
     cout << "insert" << endl;
     cout << "n: " << n << endl;
@@ -75,6 +97,7 @@ Node* insert( Node* node, int n, int count){
         
     return node;
 }
+*/
 
 class DebugUtils{
 public:
@@ -103,11 +126,11 @@ vector<int> maxXor(vector<int> arr, vector<int> queries) {
     for( auto& n : arr){
         cout << endl << endl << endl << "new number" << endl;
         DebugUtils::printBinary( n);
-        insert( root, n, 1);
+        insert( root, n, 0);
     }
     
-    //cout << "printTree" << endl;
-    //DebugUtils::printTree( root);
+    cout << "printTree" << endl;
+    DebugUtils::printTree( root);
     
     /*
     DebugUtils::printTrie( trie);
