@@ -39,6 +39,8 @@ struct Node{
 
 Node* insert( Node* node, int n, int count){
     cout << "insert" << endl;
+    cout << "n: " << n << endl;
+    cout << "count: " << count << endl;
     cin.get();
     
     if( count == 8 * sizeof( n)){
@@ -53,13 +55,24 @@ Node* insert( Node* node, int n, int count){
         return node;
     }
     
-    n = n >> 1;
+    if( count > 1){
+        cout << "shift" << endl;
+        n = n >> 1;
+    }
+        
     
-    if( n & 1)
+    if( n & 1){
+        cout << "right" << endl;
         node->right = insert( node->right, n, count + 1);
-    else
+    }
+        
+    else{
+        cout << "left" << endl;
         node->left = insert( node->left, n, count + 1);
-    
+    }
+        
+    cout << "return node" << endl;
+        
     return node;
 }
 
@@ -88,13 +101,13 @@ vector<int> maxXor(vector<int> arr, vector<int> queries) {
     
     Node* root = new Node( 2);
     for( auto& n : arr){
-        cout << n;
+        cout << endl << endl << endl << "new number" << endl;
         DebugUtils::printBinary( n);
-        cin.get();
-        insert( root, n, 8 * sizeof( n));
+        insert( root, n, 1);
     }
     
-    DebugUtils::printTree( root);
+    //cout << "printTree" << endl;
+    //DebugUtils::printTree( root);
     
     /*
     DebugUtils::printTrie( trie);
