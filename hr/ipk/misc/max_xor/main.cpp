@@ -39,76 +39,39 @@ struct Node{
 };
 
 void insert( Node* node, int n, int count, int finalValue){
-    /*cout << "--------------------------" << endl;
-    cout << "insert" << endl;
-    cout << "n: " << n << endl;
-    cout << "count: " << count << endl;
-    cin.get();*/
-    
     if( count == 8 * sizeof( n)){
-        //cout << "final:" << endl << endl;
         node->finalValue = finalValue;
         return;
     }
-	
+    
     if( n & 1){
-        //cout << "1" << endl;
-        if( !node->right){
-            //cout << "create right" << endl;
+        if( !node->right)
             node->right = new Node( 1);
-        }
-        if( count){
-            //cout << "shift" << endl;
-            n = n >> 1;
-        }
-	insert( node->right, n, count + 1, finalValue);
+
+	insert( node->right, n >> 1, count + 1, finalValue);
     }   
     else{
-        //cout << "0" << endl;
-        if( !node->left){
-            //cout << "create left" << endl;
+        if( !node->left)
             node->left = new Node( 0);
-        }
-        if( count){
-            //cout << "shift" << endl;
-            n = n >> 1;
-        }
-	insert( node->left, n, count + 1, finalValue);
+        
+	insert( node->left, n >> 1, count + 1, finalValue);
     }
 }
 
 int get( Node* node, int n){
-    //cout << "get: " << n << endl;
-    //cin.get();
     
-    
-    if( !node->left && !node->right){
-        //cout << "finalValue: " << node->finalValue << endl;
+    if( !node->left && !node->right)
         return node->finalValue;
-    }
     
     if( n & 1){
-        //cout << "1: need 0" << endl;
-        if( node->left){
-            //cout << "left" << endl;
+        if( node->left)
             return get( node->left, n >> 1);
-        }
-            
-        else{
-            //cout << "right" << endl;
-            return get( node->right, n >> 1);
-        }
+        return get( node->right, n >> 1);
     }
     else{
-       //cout << "0: need 1" << endl;
-        if( node->right){
-            //cout << "right" << endl;
+        if( node->right)
             return get( node->right, n >> 1);
-        }
-        else{
-            //cout << "left" << endl;
-            return get( node->left, n >> 1);
-        }
+        return get( node->left, n >> 1);
     }
 }
 
