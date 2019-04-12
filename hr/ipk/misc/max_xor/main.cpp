@@ -74,58 +74,60 @@ public:
 };
 
 void insert( Node* node, int n, int count, int finalValue){
+    /*
     if( finalValue == 303448051){
 	cout << "finalValue: " << finalValue << endl;
 	cout << "node->value: " << node->value << endl;
 	//cout << endl;
 	cin.get();
     }
+    */
     
-    if( count == 8 * sizeof( n)){
+    if( count == 8 * sizeof( n) - 1){
 	//cout << node->value << endl;
         node->finalValue = finalValue;
         return;
     }
     
-    if( n & 1){
+    if( n & 2147483648){
         if( !node->right)
             node->right = new Node( 1);
 
-	insert( node->right, n >> 1, count + 1, finalValue);
+	insert( node->right, n << 1, count + 1, finalValue);
     }   
     else{
         if( !node->left)
             node->left = new Node( 0);
         
-	insert( node->left, n >> 1, count + 1, finalValue);
+	insert( node->left, n << 1, count + 1, finalValue);
     }
 }
 
 int get( Node* node, int n){
     
-    cout << "get" << endl;
-    cin.get();
-    if( !node->left && !node->right){
-	cout << "node->finalValue: " << node->finalValue << endl;
+    //cout << "get" << endl;
+    //cin.get();
+    if( !node->left && !node->right)
+	//cout << "node->finalValue: " << node->finalValue << endl;
 	return node->finalValue;
-    }
+    //}
         
     
-    if( n & 1){
+    if( n & 2147483648){
         if( node->left){
-	    cout << "left" << endl;
-	    return get( node->left, n >> 1);
+	    //cout << "left" << endl;
+	    return get( node->left, n << 1);
 	}
-        cout << "right" << endl;
-        return get( node->right, n >> 1);
+        //cout << "right" << endl;
+        return get( node->right, n << 1);
     }
     else{
         if( node->right){
-	    cout << "right" << endl;
-            return get( node->right, n >> 1);
+	    //cout << "right" << endl;
+            return get( node->right, n << 1);
 	}
-	cout << "left" << endl;
-        return get( node->left, n >> 1);
+	//cout << "left" << endl;
+        return get( node->left, n << 1);
     }
 }
 
@@ -137,7 +139,7 @@ Result maxXor(vector<int> arr, vector<int> queries) {
     for( auto& n : arr){
         //cout << endl << endl << endl << "new number" << endl;
         //DebugUtils::printBinary( n);
-        insert( root, n, 0, n);
+        insert( root, n << 1, 0, n);
     }
     
     //cout << "printTree" << endl;
@@ -145,7 +147,7 @@ Result maxXor(vector<int> arr, vector<int> queries) {
     
     Result res;
     for( auto& query : queries){
-        long maxX = get( root, query) ^ query;
+        long maxX = get( root, query << 1) ^ query;
         //cout << "maxX: " << maxX << endl;
         //cin.get();
         res.push_back( maxX);
