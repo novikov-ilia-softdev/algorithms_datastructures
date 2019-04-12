@@ -11,19 +11,30 @@ vector<int> maxXor(vector<int> arr, vector<int> queries) {
     vector<int> res;
     for( int i = 0; i < queries.size(); i++){
         int maxXor = queries[ i] ^ arr[0];
+	int partnerIndex = 0;
         
         for( int j = 1; j < arr.size(); j++){
             int curXor = queries[ i] ^ arr[j];
-            if( curXor > maxXor)
-                maxXor = curXor;
+            if( curXor > maxXor){
+		maxXor = curXor;
+		partnerIndex = j;
+	    }
+                
         }
         
+        cout << "maxXor: " << maxXor << endl;
+	cout << "partnerIndex: " << partnerIndex << endl;
+	cout << "arr[partnerIndex]: " << arr[partnerIndex] << endl;
+	cout << "queries[ i]: " << queries[ i] << endl;
+        cin.get();
         res.push_back( maxXor);
     }
     
     return res;
 }
 */
+
+typedef vector<int> Result;
 
 struct Node{
     int value;
@@ -33,43 +44,6 @@ struct Node{
     
     Node( int val): value( val), left( NULL), right( NULL) {}
 };
-
-void insert( Node* node, int n, int count, int finalValue){
-    if( count == 8 * sizeof( n)){
-        node->finalValue = finalValue;
-        return;
-    }
-    
-    if( n & 1){
-        if( !node->right)
-            node->right = new Node( 1);
-
-	insert( node->right, n >> 1, count + 1, finalValue);
-    }   
-    else{
-        if( !node->left)
-            node->left = new Node( 0);
-        
-	insert( node->left, n >> 1, count + 1, finalValue);
-    }
-}
-
-int get( Node* node, int n){
-    
-    if( !node->left && !node->right)
-        return node->finalValue;
-    
-    if( n & 1){
-        if( node->left)
-            return get( node->left, n >> 1);
-        return get( node->right, n >> 1);
-    }
-    else{
-        if( node->right)
-            return get( node->right, n >> 1);
-        return get( node->left, n >> 1);
-    }
-}
 
 class DebugUtils{
 public:
@@ -91,7 +65,7 @@ public:
         printTree( node->right);
     }
     
-    static void printVector( const vector<int>& arr){
+    static void printVector( const Result& arr){
         for( auto& n : arr){
             cout << n << " ";
         }
@@ -99,7 +73,66 @@ public:
     }
 };
 
-vector<int> maxXor(vector<int> arr, vector<int> queries) {    
+void insert( Node* node, int n, int count, int finalValue){
+    if( finalValue == 303448051){
+	cout << "finalValue: " << finalValue << endl;
+	cout << "node->value: " << node->value << endl;
+	//cout << endl;
+	cin.get();
+    }
+    
+    if( count == 8 * sizeof( n)){
+	//cout << node->value << endl;
+        node->finalValue = finalValue;
+        return;
+    }
+    
+    if( n & 1){
+        if( !node->right)
+            node->right = new Node( 1);
+
+	insert( node->right, n >> 1, count + 1, finalValue);
+    }   
+    else{
+        if( !node->left)
+            node->left = new Node( 0);
+        
+	insert( node->left, n >> 1, count + 1, finalValue);
+    }
+}
+
+int get( Node* node, int n){
+    
+    cout << "get" << endl;
+    cin.get();
+    if( !node->left && !node->right){
+	cout << "node->finalValue: " << node->finalValue << endl;
+	return node->finalValue;
+    }
+        
+    
+    if( n & 1){
+        if( node->left){
+	    cout << "left" << endl;
+	    return get( node->left, n >> 1);
+	}
+        cout << "right" << endl;
+        return get( node->right, n >> 1);
+    }
+    else{
+        if( node->right){
+	    cout << "right" << endl;
+            return get( node->right, n >> 1);
+	}
+	cout << "left" << endl;
+        return get( node->left, n >> 1);
+    }
+}
+
+Result maxXor(vector<int> arr, vector<int> queries) {
+    //cout << "sizeof( int)" << sizeof( int) << endl;
+    //cout << "sizeof( long)" << sizeof( long) << endl;
+    
     Node* root = new Node( 2);
     for( auto& n : arr){
         //cout << endl << endl << endl << "new number" << endl;
@@ -110,17 +143,17 @@ vector<int> maxXor(vector<int> arr, vector<int> queries) {
     //cout << "printTree" << endl;
     //DebugUtils::printTree( root);
     
-    vector<int> res;
+    Result res;
     for( auto& query : queries){
-        int maxX = get( root, query) ^ query;
-        cout << "maxX: " << maxX << endl;
-        cin.get();
-        res.push_back( maxX ^ query);
+        long maxX = get( root, query) ^ query;
+        //cout << "maxX: " << maxX << endl;
+        //cin.get();
+        res.push_back( maxX);
     }
     
     //DebugUtils::printVector( arr);
     //DebugUtils::printVector( queries);
-    DebugUtils::printVector( res);
+    //DebugUtils::printVector( res);
     
     return res;
 }
@@ -161,7 +194,7 @@ int main()
         queries[i] = queries_item;
     }
 
-    vector<int> result = maxXor(arr, queries);
+    Result result = maxXor(arr, queries);
 
     for (int i = 0; i < result.size(); i++) {
         fout << result[i];
