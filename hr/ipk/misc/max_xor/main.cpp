@@ -33,71 +33,84 @@ struct Node{
     int value;
     Node* left;
     Node* right;
+    int finalValue;
     
-    Node( int val): value( val) {}
+    Node( int val): value( val), left( NULL), right( NULL) {}
 };
 
-void insert( Node* node, int n, int count){
-    if( count == 8 * sizeof( n))
-	return;
-    
-    if( count)
-	n = n >> 1;
-    
-    if( n & 1){
-        if( !node->right)
-	    node->right = new Node( n);
-	    
-	insert( node->right, n, count + 1);
-    }   
-    else{
-        if( !node->left)
-	    node->left = new Node( n);
-	    
-	insert( node->left, n, count + 1);
-    }
-}
-
-/*
-Node* insert( Node* node, int n, int count){
+void insert( Node* node, int n, int count, int finalValue){
+    /*cout << "--------------------------" << endl;
     cout << "insert" << endl;
     cout << "n: " << n << endl;
     cout << "count: " << count << endl;
-    cin.get();
+    cin.get();*/
     
     if( count == 8 * sizeof( n)){
-        cout << "count" << endl;
-        return node;
+        //cout << "final:" << endl << endl;
+        node->finalValue = finalValue;
+        return;
     }
-        
+	
+    if( n & 1){
+        //cout << "1" << endl;
+        if( !node->right){
+            //cout << "create right" << endl;
+            node->right = new Node( 1);
+        }
+        if( count){
+            //cout << "shift" << endl;
+            n = n >> 1;
+        }
+	insert( node->right, n, count + 1, finalValue);
+    }   
+    else{
+        //cout << "0" << endl;
+        if( !node->left){
+            //cout << "create left" << endl;
+            node->left = new Node( 0);
+        }
+        if( count){
+            //cout << "shift" << endl;
+            n = n >> 1;
+        }
+	insert( node->left, n, count + 1, finalValue);
+    }
+}
+
+int get( Node* node, int n){
+    //cout << "get: " << n << endl;
+    //cin.get();
     
-    if( !node){
-        cout << "!node" << endl;
-        node = new Node( n & 1);
-        return node;
-    }
     
-    if( count > 1){
-        cout << "shift" << endl;
-        n = n >> 1;
+    if( !node->left && !node->right){
+        //cout << "finalValue: " << node->finalValue << endl;
+        return node->finalValue;
     }
-        
     
     if( n & 1){
-        cout << "right" << endl;
-        node->right = insert( node->right, n, count + 1);
+        //cout << "1: need 0" << endl;
+        if( node->left){
+            //cout << "left" << endl;
+            return get( node->left, n >> 1);
+        }
+            
+        else{
+            //cout << "right" << endl;
+            return get( node->right, n >> 1);
+        }
     }
-        
     else{
-        cout << "left" << endl;
-        node->left = insert( node->left, n, count + 1);
+       //cout << "0: need 1" << endl;
+        if( node->right){
+            //cout << "right" << endl;
+            return get( node->right, n >> 1);
+        }
+        else{
+            //cout << "left" << endl;
+            return get( node->left, n >> 1);
+        }
     }
-        
-    cout << "return node" << endl;
-        
-    return node;
 }
-*/
 
 class DebugUtils{
 public:
@@ -118,32 +131,39 @@ public:
         cout << node->value << " ";
         printTree( node->right);
     }
+    
+    static void printVector( const vector<int>& arr){
+        for( auto& n : arr){
+            cout << n << " ";
+        }
+        cout << endl;
+    }
 };
 
 vector<int> maxXor(vector<int> arr, vector<int> queries) {
     
     Node* root = new Node( 2);
     for( auto& n : arr){
-        cout << endl << endl << endl << "new number" << endl;
-        DebugUtils::printBinary( n);
-        insert( root, n, 0);
+        //cout << endl << endl << endl << "new number" << endl;
+        //DebugUtils::printBinary( n);
+        insert( root, n, 0, n);
     }
     
-    cout << "printTree" << endl;
-    DebugUtils::printTree( root);
+    //cout << "printTree" << endl;
+    //DebugUtils::printTree( root);
     
-    /*
-    DebugUtils::printTrie( trie);
     
     vector<int> res;
     for( auto& query : queries){
-        res.push_back( trie.get( query));
+        int maxXor = get( root, query);
+        res.push_back( get( root, query) ^ query);
     }
     
-    return res;
-    */
+    DebugUtils::printVector( arr);
+    DebugUtils::printVector( queries);
+    DebugUtils::printVector( res);
     
-    return arr;
+    return res;
 }
 
 int main()
