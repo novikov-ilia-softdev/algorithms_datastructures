@@ -4,8 +4,9 @@ using namespace std;
 
 vector<string> split_string(string);
 
-/*
+
 // Brute force
+/*
 vector<int> maxXor(vector<int> arr, vector<int> queries) {
     vector<int> res;
     for( int i = 0; i < queries.size(); i++){
@@ -23,11 +24,6 @@ vector<int> maxXor(vector<int> arr, vector<int> queries) {
     return res;
 }
 */
-
-// TODO
-// create trie
-// make search of inversion
-
 
 struct Node{
     int value;
@@ -103,8 +99,7 @@ public:
     }
 };
 
-vector<int> maxXor(vector<int> arr, vector<int> queries) {
-    
+vector<int> maxXor(vector<int> arr, vector<int> queries) {    
     Node* root = new Node( 2);
     for( auto& n : arr){
         //cout << endl << endl << endl << "new number" << endl;
@@ -115,15 +110,16 @@ vector<int> maxXor(vector<int> arr, vector<int> queries) {
     //cout << "printTree" << endl;
     //DebugUtils::printTree( root);
     
-    
     vector<int> res;
     for( auto& query : queries){
-        int maxXor = get( root, query);
-        res.push_back( get( root, query) ^ query);
+        int maxX = get( root, query) ^ query;
+        cout << "maxX: " << maxX << endl;
+        cin.get();
+        res.push_back( maxX ^ query);
     }
     
-    DebugUtils::printVector( arr);
-    DebugUtils::printVector( queries);
+    //DebugUtils::printVector( arr);
+    //DebugUtils::printVector( queries);
     DebugUtils::printVector( res);
     
     return res;
@@ -132,7 +128,7 @@ vector<int> maxXor(vector<int> arr, vector<int> queries) {
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input00.txt");
+    ifstream fin("input03.txt");
 
     int n;
     fin >> n;
