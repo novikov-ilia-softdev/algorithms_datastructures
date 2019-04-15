@@ -8,26 +8,19 @@ long candies(int n, vector<int> arr) {
     for( int i = 0; i < arr.size(); i++){
         cand.push_back( 1);
     }
-    
-    bool onceMore = true;
-    while( onceMore){
-        onceMore = false;
         
-        for( int i = 1; i < arr.size(); i++){
-            if( arr[ i] > arr[ i - 1] && cand[ i] <= cand[ i - 1]){
-                cand[ i]++;
-                onceMore = true;
-            }
+    for( int i = 1; i < arr.size(); i++){
+        if( arr[ i] > arr[ i - 1] && cand[ i] <= cand[ i - 1]){
+            cand[ i] += cand[ i - 1] - cand[ i] + 1;
+        }
+        
+    }
+
+    for( int i = arr.size() - 2; i >= 0; i--){
+        if( arr[ i] > arr[ i + 1] && cand[ i] <= cand[ i + 1]){
+            cand[ i] += cand[ i + 1] - cand[ i] + 1;
+        }
             
-        }
-    
-        for( int i = arr.size() - 2; i >= 0; i--){
-            if( arr[ i] > arr[ i + 1] && cand[ i] <= cand[ i + 1]){
-                cand[ i]++;
-                onceMore = true;
-            }
-                
-        }
     }
     
     long res = 0;
