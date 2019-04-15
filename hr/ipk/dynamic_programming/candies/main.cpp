@@ -1,36 +1,43 @@
 #include <bits/stdc++.h>
+#include <stdlib.h> 
 
 using namespace std;
 
-// Complete the candies function below.
-long candies(int n, vector<int> arr) {
-    vector<int> cand;
-    for( int i = 0; i < arr.size(); i++){
-        cand.push_back( 1);
-    }
-        
-    for( int i = 1; i < arr.size(); i++){
-        if( arr[ i] > arr[ i - 1] && cand[ i] <= cand[ i - 1]){
-            cand[ i] += cand[ i - 1] - cand[ i] + 1;
-        }
-        
-    }
+bool curGreaterPrev( const vector<int>& arr, int curIndex, int prevIndex){
+    return arr[ curIndex] > arr[ prevIndex];
+}
 
-    for( int i = arr.size() - 2; i >= 0; i--){
-        if( arr[ i] > arr[ i + 1] && cand[ i] <= cand[ i + 1]){
-            cand[ i] += cand[ i + 1] - cand[ i] + 1;
-        }
-            
+void addCandies( vector<int>& arr, int curIndex, int prevIndex){
+    arr[ curIndex] += abs( arr[ curIndex] - arr[ prevIndex]) + 1;
+}
+
+void walkForward( const vector<int>& marks, vector<int>& candies){
+    for( int i = 1; i < marks.size(); i++){
+        if( curGreaterPrev( marks, i, i - 1) && !curGreaterPrev( candies, i, i - 1))
+	    addCandies( candies, i, i - 1);
     }
+}
+
+void walkBackward( const vector<int>& marks, vector<int>& candies){
+    for( int i = marks.size() - 2; i >= 0; i--){
+	if( curGreaterPrev( marks, i, i + 1) && !curGreaterPrev( candies, i, i + 1))
+	    addCandies( candies, i, i + 1);
+    }
+}
+
+long getCandiesCount(int n, vector<int> marks) {
+    
+    vector<int> candies(marks.size(), 1);
+      
+    walkForward( marks, candies);
+    walkBackward( marks, candies);
     
     long res = 0;
-    
-    for( int i = 0; i < cand.size(); i++){
-        res += cand[ i];
+    for( auto c: candies){
+	res += c;
     }
     
     return res;
-
 }
 
 int main()
@@ -52,7 +59,7 @@ int main()
         arr[i] = arr_item;
     }
 
-    long result = candies(n, arr);
+    long result = getCandiesCount(n, arr);
 
     fout << result << "\n";
 
