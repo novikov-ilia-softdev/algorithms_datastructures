@@ -16,8 +16,9 @@ string abbreviation(string a, string b) {
     
     //cout << endl << "a: " << a << ", b:" << b << endl;
     
+    bool bInA = false;
     if (a.find( b) != string::npos){
-	return "NO";
+	bInA = true;
     }
     a = str_toupper( a);
     
