@@ -14,12 +14,12 @@ std::string str_toupper(std::string s) {
 
 string abbreviation(string a, string b) {
     
-    //cout << endl << "a: " << a << ", b:" << b << endl;
+    cout << endl << "a: " << a << ", b:" << b << endl;
     
     bool bInA = false;
-    if (a.find( b) != string::npos){
-	bInA = true;
-    }
+    //if (a.find( b) != string::npos){
+	//return "NO";
+    //}
     a = str_toupper( a);
     
     /*for( auto& c: a){
@@ -27,12 +27,12 @@ string abbreviation(string a, string b) {
     }*/
     
     if (a.find( b) == string::npos){
-	//cout << "NO" << endl;
+	cout << "NO" << endl;
 	return "NO";
     }
 	
     
-    //cout << "YES" << endl;
+    cout << "YES" << endl;
     return "YES";
 }
 
