@@ -3,41 +3,21 @@
 using namespace std;
 
 string abbreviation(string a, string b) {
-    /*
-    cout << endl << "a: " << a << ", b:" << b << endl;
     
-    set<int> wasBig;
-    for( int i = 0; i < a.size(); i++){
-        if( isupper(a[i]))
-            wasBig.insert( i);
-        else
-            a[i] = toupper( a[i]);
-    }
+    //cout << endl << "a: " << a << ", b:" << b << endl;
     
-    int startIndex = a.find( b);
-    
-    if (startIndex == string::npos){
-	cout << "NO" << endl;
-	return "NO";
-    }
-	
-    for( int i = 0; i < a.size(); i++){
-        if( i >= startIndex && i <= startIndex + b.size())
-            continue;
-        
-        if( wasBig.find( i) != wasBig.end()){
-            cout << "was big NO" << endl;
-            return "NO";
-        }
-    }
-    
-    cout << "YES" << endl;
-    */
     int expected = 0;
     
+    // lower letter : delete or up?
+    
     for( int i = 0; i < a.size(); i++){
-        if( expected == b.size() && isupper(a[i]))
-            return "NO";
+         cout << "i:" << i << "(" << a[i] << ")" << ", expected: " << expected << endl;
+	
+	if( expected == b.size() && isupper(a[i])){
+	    cout << "NO after upper" << endl;
+	    return "NO";
+	}
+            
         
         if (isupper(a[i])){
             if(a[i] != b[expected]){
@@ -46,6 +26,7 @@ string abbreviation(string a, string b) {
                     continue;
                 }
                 
+                cout << "NO before upper" << endl;
                 return "NO";
             }
             
@@ -59,15 +40,19 @@ string abbreviation(string a, string b) {
             expected++;
     }
     
-    if( expected == b.size())
-        return "YES";
+    if( expected == b.size()){
+	cout << "final YES" << endl;
+	return "YES";
+    }
+        
+    cout << "final NO " << endl;
     return "NO";
 }
 
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input00.txt");
+    ifstream fin("input06.txt");
 
     int q;
     fin >> q;
