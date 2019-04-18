@@ -2,35 +2,34 @@
 
 using namespace std;
 
-std::string str_toupper(std::string s) {
-    std::transform(s.begin(), s.end(), s.begin(), 
-                // static_cast<int(*)(int)>(std::toupper)         // неправильно
-                // [](int c){ return std::toupper(c); }           // неправильно
-                // [](char c){ return std::toupper(c); }          // неправильно
-                   [](unsigned char c){ return std::toupper(c); } // правильно
-                  );
-    return s;
-}
-
 string abbreviation(string a, string b) {
     
     cout << endl << "a: " << a << ", b:" << b << endl;
     
-    bool bInA = false;
-    //if (a.find( b) != string::npos){
-	//return "NO";
-    //}
-    a = str_toupper( a);
+    set<int> wasBig;
+    for( int i = 0; i < a.size(); i++){
+        if( isupper(a[i]))
+            wasBig.insert( i);
+        else
+            a[i] = toupper( a[i]);
+    }
     
-    /*for( auto& c: a){
-        c = toupper( c);
-    }*/
+    int startIndex = a.find( b);
     
-    if (a.find( b) == string::npos){
+    if (startIndex == string::npos){
 	cout << "NO" << endl;
 	return "NO";
     }
 	
+    for( int i = 0; i < a.size(); i++){
+        if( i >= startIndex && i <= startIndex + b.size())
+            continue;
+        
+        if( wasBig.find( i) != wasBig.end()){
+            cout << "was big NO" << endl;
+            return "NO";
+        }
+    }
     
     cout << "YES" << endl;
     return "YES";
@@ -39,7 +38,7 @@ string abbreviation(string a, string b) {
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input01.txt");
+    ifstream fin("input15.txt");
 
     int q;
     fin >> q;
