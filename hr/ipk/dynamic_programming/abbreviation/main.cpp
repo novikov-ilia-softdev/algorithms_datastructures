@@ -3,7 +3,7 @@
 using namespace std;
 
 string abbreviation(string a, string b) {
-    
+    /*
     cout << endl << "a: " << a << ", b:" << b << endl;
     
     set<int> wasBig;
@@ -32,13 +32,42 @@ string abbreviation(string a, string b) {
     }
     
     cout << "YES" << endl;
-    return "YES";
+    */
+    int expected = 0;
+    
+    for( int i = 0; i < a.size(); i++){
+        if( expected == b.size() && isupper(a[i]))
+            return "NO";
+        
+        if (isupper(a[i])){
+            if(a[i] != b[expected]){
+                if( a[i] == b[0]){
+                    expected = 1;
+                    continue;
+                }
+                
+                return "NO";
+            }
+            
+            else{
+                expected++;
+                continue;
+            }
+        }
+        
+        if( toupper( a[i]) == b[ expected])
+            expected++;
+    }
+    
+    if( expected == b.size())
+        return "YES";
+    return "NO";
 }
 
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input15.txt");
+    ifstream fin("input00.txt");
 
     int q;
     fin >> q;
