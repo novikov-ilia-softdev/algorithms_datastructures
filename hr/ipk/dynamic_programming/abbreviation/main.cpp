@@ -1,98 +1,68 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-/*
-string abbreviation(string a, string b) {
+
+string problemA = "rREERreeeeRreReeeeeEErRRrrererreRreReeereRrerreRrREEeReEErrrreeErEeReRrrerrrEreereereeRrEeRrreREeeerEReREerrrrreerErEErrrrRErrrRrreeReReereERerereReRreEeeeeEEeerrrerRrrrrRerreeeEEereeereeEeeEseeReEreRRERrrrereerrererrEReerrrrrreeeRrreeeeeRRrsrrREererERRreereeRereEeRrRrRereEeeeRreEeerrRrereRerrrerererErRererrreeEeRRrErErrErrerrrreerrrreReeererersreReerEreRerReRRreEeeReereeEerrEEErrrEererreeerreeerrrrrEeeEEerrrReReeerreeREeEeREeReeeeREeRerERerreRereeslrrreeerERerErrRreRRrreEeererrrRRRreErrRREreeEeereeerrreeerrEerrrRRrerrerRReErRRrreEeeRereeEeERreEeEerREErReReRerrrreeERErereRreeReeeeeeErrreeerEeerEREeeReereerrrrerrErerrErerRrrErerrReEEerReeERRRrErereeeerERerRrRErSeEeeeeRrEereeeErrrREerERerReeeeReerRrreeEEeEerrereeeererEEERseeererRrrRerreersereeeRrreeEerrrrrreRERrErerrreRrrererRerererRreErEErrRrREreRrRrerReEeRrErrerererrreerreEReeRererrreReEEererREeEvRRrrer";
+
+string problemB = "EREEEERRRRRRREREEEREERRRREERRERRREEERRERREEEEERRRRERRRREEERRRREEEEEEERRRRREEEEEEEEEEESRERRERRRRRERRRERRRRRREREREEREERRRREREEREERRRERERRREERREERERRERRRESERERRRERREREEEEEEREERERREEREEEERREREEEREEERERRERRERREEEEERERRRRREERRRREERRRREEERERREEERRRRRERRREREEEREEEREERREREREEREEREEEERREEREEEREREEREERERRERRERRREEEERREERRREREERERRRERSEEEEREERERREERERERREEEREEREEERSERRREREEERREERRRRERERREERERERREEREERRRERRREEREEEREEREERERREEEEREEERRR";
+
+string problemX = "RrerrErEReeerrrrrReEreerReerRerREERreeeeRreReeeeeEErRRrrererreRreReeereRrerreRrREEeReEErrrreeErEeReRrrerrrEreereereeRrEeRrreREeeerEReREerrrrreerErEErrrrRErrrRrreeReReereERerereReRreEeeeeEEeerrrerRrrrrRerreeeEEereeereeEeeEseeReEreRRERrrrereerrererrEReerrrrrreeeRrreeeeeRRrsrrREererERRreereeRereEeRrRrRereEeeeRreEeerrRrereRerrrerererErRererrreeEeRRrErErrErrerrrreerrrreReeererersreReerEreRerReRRreEeeReereeEerrEEErrrEererreeerreeerrrrrEeeEEerrrReReeerreeREeEeREeReeeeREeRerERerreRereeslrrreeerERerErrRreRRrreEeererrrRRRreErrRREreeEeereeerrreeerrEerrrRRrerrerRReErRRrreEeeRereeEeERreEeEerREErReReRerrrreeERErereRreeReeeeeeErrreeerEeerEREeeReereerrrrerrErerrErerRrrErerrReEEerReeERRRrErereeeerERerRrRErSeEeeeeRrEereeeErrrREerERerReeeeReerRrreeEEeEerrereeeererEEERseeererRrrRerreersereeeRrreeEerrrrrreRERrErerrreRrrererRerererRreErEErrRrREreRrRrerReEeRrErrerererrreerreEReeRererrreReEEererREeEvRRrrer";
+
+bool isPossibleToTransform(string a, string b, string fromA){
     
-    //cout << endl << "a: " << a << ", b:" << b << endl;
+    int callId = rand();
     
-    int expected = 0;
-    
-    // lower letter : delete or up?
-    
-    for( int i = 0; i < a.size(); i++){
-         cout << "i:" << i << "(" << a[i] << ")" << ", expected: " << expected << endl;
-	
-	if( expected == b.size() && isupper(a[i])){
-	    cout << "NO after upper" << endl;
-	    return "NO";
-	}
-            
-        
-        if (isupper(a[i])){
-            if(a[i] != b[expected]){
-                if( a[i] == b[0]){
-                    expected = 1;
-                    continue;
-                }
-                
-                cout << "NO before upper" << endl;
-                return "NO";
-            }
-            
-            else{
-                expected++;
-                continue;
-            }
-        }
-        
-        if( toupper( a[i]) == b[ expected])
-            expected++;
+    //cout << "a: " << a << endl;
+    //cout << a.size() << endl;
+    //cout << "b: " << b << endl;
+    //cout << endl;
+      
+    if( a == problemX ){
+	cout << "WOW" << endl;
+	cout << origin << endl;
+	//cin.get();
     }
     
-    if( expected == b.size()){
-	cout << "final YES" << endl;
-	return "YES";
-    }
+    if( a.empty() && b.empty())
+	return true;
+          
+    if( a.empty() && !b.empty())
+	return false;
         
-    cout << "final NO " << endl;
-    return "NO";
-}
-*/
-
-bool isEmpty( const string& s){
-    return s.size() == 0;
-}
-
-bool isPossibleToTransform(string a, string b){
-    //cout << "a: " << a << endl << "b: " << b << endl;
-    //cout << "reason: " << reason << endl;
-    //cin.get();
-    
-    if( isEmpty( a) && isEmpty( b))
-        return true;
-        
-    if( isEmpty( a) && !isEmpty( b))
-        return false;
-        
-    if( !isEmpty( a) && isEmpty( b)){
+    if( !a.empty() && b.empty()){
         if( isupper( a[0]))
-            return false;
-            
-        return isPossibleToTransform( a.substr( 1), b);
+	    return false;
+        
+	//cout << "1 (" << callId << "): " << a << endl;
+        return isPossibleToTransform( a.substr( 1), b, a);
     }
         
     if( islower( a[0])){
-        a[ 0] = toupper( a[0]);
-
-	if( isPossibleToTransform( a, b))
+	
+	//cout << "2 (" << callId << "): " << a << endl;
+	a[ 0] = toupper( a[0]);
+	
+	if( isPossibleToTransform( a, b, a))
 	    return true;
-                
-        if( isPossibleToTransform( a.substr( 1), b))
+	
+	//cout << "3 (" << callId << "): " << a << endl;
+        if( isPossibleToTransform( a.substr( 1), b, a))
             return true;
         
         return false;
     }
     
-    if( a[ 0] == b[ 0])
-        return isPossibleToTransform( a.substr( 1), b.substr( 1));
-
+    if( a[ 0] == b[ 0]){
+	//cout << "4 (" << callId << "): " << a << endl;
+	return isPossibleToTransform( a.substr( 1), b.substr( 1), a);
+    }
+	
     return false;
 }
 
 string abbreviation(string a, string b) {
     
-    if( isPossibleToTransform( a, b)){
+    if( isPossibleToTransform( a, b, a)){
         cout << "YES" << endl;
         return "YES";
     }
@@ -103,8 +73,10 @@ string abbreviation(string a, string b) {
 
 int main()
 {
+    srand (time(NULL));
+    
     ofstream fout(getenv("OUTPUT_PATH"));
-    ifstream fin("input12_3.txt");
+    ifstream fin("input12_4.txt");
     
     int q;
     fin >> q;
