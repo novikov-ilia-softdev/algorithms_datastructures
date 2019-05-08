@@ -10,7 +10,8 @@ size_t makeKey( const string& a, const string& b){
 
 typedef unordered_set<size_t> Visited;
 
-bool isPossibleToTransform(const string& a, const string& b, Visited& visited){
+bool isPossibleToTransform(const string& a, const string& b){
+    static Visited visited;
     
     bool retval = false;
     
@@ -25,35 +26,40 @@ bool isPossibleToTransform(const string& a, const string& b, Visited& visited){
     
     if( visited.find( makeKey(a, b)) != visited.end())
 	return false;
-        
-    if( a[ 0] == b[ 0])
-	retval = isPossibleToTransform( a.substr( 1), b.substr( 1), visited);
-	return true;
     
-    if (toupper(a[0]) != b[0])
-        retval = isPossibleToTransform( a.substr( 1), b, visited);
-    else
-        retval = (isPossibleToTransform( a.substr( 1), b, visited) || isPossibleToTransform( a.substr( 1), a.substr( 1), visited));
+    if( isupper( a[ 0])){
+	if( a[ 0] == b[ 0])
+	    retval = isPossibleToTransform( a.substr( 1), b.substr( 1));
+    }
+    else{
+	if (toupper(a[0]) != b[0])
+	    retval = isPossibleToTransform( a.substr( 1), b);
+	else
+	    retval = (isPossibleToTransform( a.substr( 1), b) || isPossibleToTransform( a.substr( 1), b.substr( 1)));
+    }
     
     if( !retval)
 	visited.insert( makeKey(a, b));
+    
     return retval;
 }
 
 string abbreviation(string a, string b) {
-    Visited visited;
-    
-    if( isPossibleToTransform( a, b, visited)){
-        //cout << "YES" << endl;
+
+    if( isPossibleToTransform( a, b)){
+        cout << "YES" << endl;
         return "YES";
     }
         
-    //cout << "NO" << endl;
+    cout << "NO" << endl;
     return "NO";
 }
 
 int main()
 {
+    time_t start, end;
+    time(&start);
+    
     ofstream fout(getenv("OUTPUT_PATH"));
     ifstream fin("input13.txt");
     
@@ -74,6 +80,12 @@ int main()
     }
 
     fout.close();
+    
+    time(&end);
+	
+    double time_taken = double(end - start); 
+    cout << "Time taken by program is : " << fixed << time_taken << setprecision(5); 
+    cout << " sec " << endl;
 
     return 0;
 }
