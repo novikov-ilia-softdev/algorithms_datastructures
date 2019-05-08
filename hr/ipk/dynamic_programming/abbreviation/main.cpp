@@ -8,29 +8,27 @@ string makeKey( const string& a, const string& b){
 
 bool isPossibleToTransform(const string& a, const string& b){
     
-    static unordered_map<string, bool> visited;
+    static unordered_set<string> visited;
     
     if( visited.find( makeKey(a, b)) != visited.end())
-	return visited[ makeKey(a, b)];
+	return false;
     
     if( a.empty() && b.empty()){
 	return true;
     }
 	
     if( a.empty() && !b.empty()){
-	visited[ makeKey(a, b)] = false;
+	visited.insert( makeKey(a, b));
 	return false;
     }
 	 
     if( !a.empty() && b.empty()){
-        if( isupper( a[0])){
-	    visited[ makeKey(a, b)] = false;
-	    return false;
+        for( auto c: a){
+	    if( isupper( c))
+		return false;
 	}
-	    
-	bool res = isPossibleToTransform( a.substr( 1), b);
-	visited[ makeKey(a, b)] = res;
-	return res;
+	
+	return true;
     }
         
     if( islower( a[0])){
@@ -45,17 +43,18 @@ bool isPossibleToTransform(const string& a, const string& b){
 	    return true;
 	}
             
-	visited[ makeKey(a, b)] = false;
+	visited.insert( makeKey(a, b));
         return false;
     }
     
     if( a[ 0] == b[ 0]){
 	bool res = isPossibleToTransform( a.substr( 1), b.substr( 1));
-	visited[ makeKey(a, b)] = res;
+	if( !res)
+	    visited.insert( makeKey(a, b));
 	return res;
     }
 	
-    visited[ makeKey(a, b)] = false;
+    visited.insert( makeKey(a, b));
     return false;
 }
 
