@@ -2,23 +2,27 @@
 
 using namespace std;
 
+/*
 string makeKey( const string& a, const string& b){
     return a + "_" + b;
 }
+*/
 
-bool isPossibleToTransform(const string& a, const string& b){
-    
-    static unordered_set<string> visited;
-    
-    if( visited.find( makeKey(a, b)) != visited.end())
-	return false;
+hash<std::string> hash_fn;
+
+size_t makeKey( const string& a, const string& b){
+    return hash_fn( a + "_" + b);
+}
+
+typedef unordered_set<size_t> Visited;
+
+bool isPossibleToTransform(const string& a, const string& b, Visited& visited){
     
     if( a.empty() && b.empty()){
 	return true;
     }
 	
     if( a.empty() && !b.empty()){
-	visited.insert( makeKey(a, b));
 	return false;
     }
 	 
@@ -30,37 +34,32 @@ bool isPossibleToTransform(const string& a, const string& b){
 	
 	return true;
     }
+    
+    if( visited.find( makeKey(a, b)) != visited.end())
+	return false;
         
     if( islower( a[0])){
-	string copyA = a;
-	copyA[ 0] = toupper( copyA[0]);
-	
-	if( isPossibleToTransform( copyA, b)){
+	// up
+	if( toupper(a[0]) == b[ 0] && isPossibleToTransform( a.substr( 1), b.substr( 1), visited))
 	    return true;
-	}
 	   
-        if( isPossibleToTransform( a.substr( 1), b)){
+	// delete
+        if( isPossibleToTransform( a.substr( 1), b, visited))
 	    return true;
-	}
-            
-	visited.insert( makeKey(a, b));
-        return false;
+    }
+    else{
+	if( a[ 0] == b[ 0] && isPossibleToTransform( a.substr( 1), b.substr( 1), visited))
+	    return true;
     }
     
-    if( a[ 0] == b[ 0]){
-	bool res = isPossibleToTransform( a.substr( 1), b.substr( 1));
-	if( !res)
-	    visited.insert( makeKey(a, b));
-	return res;
-    }
-	
     visited.insert( makeKey(a, b));
     return false;
 }
 
 string abbreviation(string a, string b) {
+    Visited visited;
     
-    if( isPossibleToTransform( a, b)){
+    if( isPossibleToTransform( a, b, visited)){
         //cout << "YES" << endl;
         return "YES";
     }
@@ -71,8 +70,6 @@ string abbreviation(string a, string b) {
 
 int main()
 {
-    srand (time(NULL));
-    
     ofstream fout(getenv("OUTPUT_PATH"));
     ifstream fin("input13.txt");
     
