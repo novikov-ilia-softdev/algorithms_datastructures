@@ -47,11 +47,11 @@ bool isPossibleToTransform(const string& a, const string& b){
 string abbreviation(string a, string b) {
 
     if( isPossibleToTransform( a, b)){
-        cout << "YES" << endl;
+        //cout << "YES" << endl;
         return "YES";
     }
         
-    cout << "NO" << endl;
+    //cout << "NO" << endl;
     return "NO";
 }
 
