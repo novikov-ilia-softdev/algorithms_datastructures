@@ -21,21 +21,21 @@ bool isPossibleToTransform(const string& a, const string& b){
     if (a.size() < b.size())
         return false;
 	 
-    if (isupper(a[0]) && a[0] != b[0])
+    if (isupper(a[a.size() - 1]) && a[a.size() - 1] != b[b.size() - 1])
         return false;
     
     if( visited.find( makeKey(a, b)) != visited.end())
 	return false;
     
-    if( isupper( a[ 0])){
-	if( a[ 0] == b[ 0])
-	    retval = isPossibleToTransform( a.substr( 1), b.substr( 1));
+    if( isupper( a[ a.size() - 1])){
+	if( a[ a.size() - 1] == b[ b.size() - 1])
+	    retval = isPossibleToTransform( a.substr( 0, a.size() - 1), b.substr( 0, b.size() - 1));
     }
     else{
-	if (toupper(a[0]) != b[0])
-	    retval = isPossibleToTransform( a.substr( 1), b);
+	if (toupper(a[a.size() - 1]) != b[b.size() - 1])
+	    retval = isPossibleToTransform( a.substr( 0, a.size() - 1), b);
 	else
-	    retval = (isPossibleToTransform( a.substr( 1), b) || isPossibleToTransform( a.substr( 1), b.substr( 1)));
+	    retval = (isPossibleToTransform( a.substr( 0, a.size() - 1), b) || isPossibleToTransform( a.substr( 0, a.size() - 1), b.substr( 0, b.size() - 1)));
     }
     
     if( !retval)
