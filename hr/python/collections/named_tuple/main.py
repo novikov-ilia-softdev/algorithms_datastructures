@@ -8,6 +8,6 @@ students = []
 
 for i in range( n):
     inp = input().split()
-    students.append( Student( inp[ 0], inp[ 1], inp[ 2], inp[ 3]))
+    students.append( Student( *inp))
 
 print( sum( int(s.MARKS) for s in students) / len( students))
