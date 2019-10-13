@@ -6,6 +6,32 @@ import random
 import re
 import sys
 
+def delete_edges(edges, i, j):
+    result = []
+    for index in range(len(edges)):
+        if( index == i or index == j):
+            continue
+
+        result.append( edges[index])
+
+    return result
+
+def get_forest(nodes, edges):
+    print('get_forest')
+    print(nodes)
+    print(edges)
+    dict = {}
+
+    for i in range(1,len(nodes) + 1):
+        dict[i] = []
+
+    for edge in edges:
+        dict[edge[0]].append(edge[1])
+        dict[edge[1]].append(edge[0])
+    
+    print( dict)
+    print()
+
 class Tree:
     def __init__( self, nodes, edges):
         self._nodes = nodes
@@ -13,13 +39,15 @@ class Tree:
 
     def get_balanced_forest( self):
         min_node = -1
-        for i in range( 0, self._edges.size() - 1):
-            for j in range( i + 1, self._edges.size()):
-                new_edges = self._make_new_edges( i, j)
-                forest = self._get_forest( self._nodes, new_edges)
-                new_node = self._get_new_node( forest)
-                if(new_node > 0 and new_node < min_node)
-                    min_node = new_node
+        for i in range( 0, len(self._edges) - 1):
+            for j in range( i + 1, len(self._edges)):
+                #print( i, j)
+                new_edges = delete_edges(self._edges, i, j)
+                print( new_edges)
+                forest = get_forest( self._nodes, new_edges)
+                #new_node = self._get_new_node( forest)
+                #if(new_node > 0 and new_node < min_node):
+                #    min_node = new_node
 
         return min_node
 
