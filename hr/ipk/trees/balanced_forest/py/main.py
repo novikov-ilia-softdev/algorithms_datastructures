@@ -56,8 +56,18 @@ def get_forest(nodes, edges):
     forest_sums.sort()
     #print(forest_sums)
 
-    if( len(forest_sums) == 3 and forest_sums[1] == forest_sums[2]):
-        return forest_sums[1] - forest_sums[0]
+    print(forest_sums)
+    if( len(forest_sums) == 2 and forest_sums[0] == forest_sums[1]):
+        return forest_sums[0]
+        
+    if( len(forest_sums) == 3):
+        if(forest_sums[0] == forest_sums[1] == forest_sums[2]):
+            return 0
+        if(forest_sums[1] == forest_sums[2]):
+            return forest_sums[1] - forest_sums[0]
+        else:
+            return -1
+
     else:
         return -1
     
@@ -69,14 +79,24 @@ class Tree:
         self._edges = edges
 
     def get_balanced_forest( self):
+        print('get_balanced_forest')
         min_node = -1
+
+        for i in range( 0, len(self._edges)):
+            new_edges = delete_edges(self._edges, i, -1)
+            new_node = get_forest( self._nodes, new_edges)
+            if(new_node != -1):
+                    if(min_node == -1 or new_node < min_node):
+                        min_node = new_node
+
         for i in range( 0, len(self._edges) - 1):
             for j in range( i + 1, len(self._edges)):
-                #print( i, j)
+                print( i, j)
                 new_edges = delete_edges(self._edges, i, j)
-                #print( new_edges)
+                print( new_edges)
                 new_node = get_forest( self._nodes, new_edges)
-                #print( new_node)
+                print( new_node)
+                print()
                 #new_node = self._get_new_node( forest)
                 if(new_node != -1):
                     if(min_node == -1 or new_node < min_node):
