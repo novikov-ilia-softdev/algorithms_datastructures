@@ -7,110 +7,75 @@ import re
 import sys
 import queue
 
-def delete_edges(edges, i, j):
-    result = []
-    for index in range(len(edges)):
-        if( index == i or index == j):
-            continue
-
-        result.append( edges[index])
-
-    return result
-
-def get_forest(nodes, edges):
-    #print('get_forest')
-    #print(nodes)
-    #print(edges)
-    dictionary = {}
-
-    for i in range(1,len(nodes) + 1):
-        dictionary[i] = {}
-        dictionary[i]['with'] = []
-        dictionary[i]['val'] = nodes[i - 1]
-        dictionary[i]['visited'] = False
-
-    for edge in edges:
-        dictionary[edge[0]]['with'].append(edge[1])
-        dictionary[edge[1]]['with'].append(edge[0])
-    
-    #print( dictionary)
-   
-    forest_sums = []
-
-    for node in dictionary:
-        #print( node)
-        if( dictionary[node]['visited'] == False):
-            treeSum = 0
-            q = queue.Queue()
-            q.put(node)
-            while not q.empty():
-                cur = q.get()
-                treeSum = treeSum + dictionary[cur]['val']
-                dictionary[cur]['visited'] = True
-                for i in dictionary[cur]['with']:
-                    if( dictionary[i]['visited'] == False):
-                        q.put(i)
-
-            forest_sums.append( treeSum)
- 
-    forest_sums.sort()
-    #print(forest_sums)
-
-    print(forest_sums)
-    if( len(forest_sums) == 2 and forest_sums[0] == forest_sums[1]):
-        return forest_sums[0]
-        
-    if( len(forest_sums) == 3):
-        if(forest_sums[0] == forest_sums[1] == forest_sums[2]):
-            return 0
-        if(forest_sums[1] == forest_sums[2]):
-            return forest_sums[1] - forest_sums[0]
-        else:
-            return -1
-
-    else:
-        return -1
-    
-    #print()
-
 class Tree:
-    def __init__( self, nodes, edges):
+    def __init__(self, nodes, edges):
         self._nodes = nodes
         self._edges = edges
 
-    def get_balanced_forest( self):
-        print('get_balanced_forest')
-        min_node = -1
+    def create_dict(self):
+        self._dictionary = {}
 
-        for i in range( 0, len(self._edges)):
-            new_edges = delete_edges(self._edges, i, -1)
-            new_node = get_forest( self._nodes, new_edges)
-            if(new_node != -1):
-                    if(min_node == -1 or new_node < min_node):
-                        min_node = new_node
+        for i in range(1,len(self._nodes) + 1):
+            self._dictionary[i] = {}
+            self._dictionary[i]['with'] = []
+            self._dictionary[i]['val'] = self._nodes[i - 1]
+            self._dictionary[i]['visited'] = False
 
-        for i in range( 0, len(self._edges) - 1):
-            for j in range( i + 1, len(self._edges)):
-                print( i, j)
-                new_edges = delete_edges(self._edges, i, j)
-                print( new_edges)
-                new_node = get_forest( self._nodes, new_edges)
-                print( new_node)
-                print()
-                #new_node = self._get_new_node( forest)
-                if(new_node != -1):
-                    if(min_node == -1 or new_node < min_node):
-                        min_node = new_node
+        for edge in self._edges:
+            self._dictionary[edge[0]]['with'].append(edge[1])
+            self._dictionary[edge[1]]['with'].append(edge[0])
 
-        return min_node
+        #print(self._dictionary)
 
+    def create_sum(self, node):
+        if(self._dictionary[node]['visited'] == True):
+            return 0
+
+        self._dictionary[node]['sum'] = self._dictionary[node]['val']
+        self._dictionary[node]['visited'] = True
+        for neighbour in self._dictionary[node]['with']:
+            self._dictionary[node]['sum'] = self._dictionary[node]['sum'] + self.create_sum(neighbour)
+
+        return self._dictionary[node]['sum']
+
+    def get_balanced_forest(self):
+        sums = []
+        for node in self._dictionary:
+            sums.append(self._dictionary[node]['sum'])
+
+        total_sum = sums[0]
+        sums = sums[1:]
+        #print(sums)
+
+        res = -1
+
+        for i in range( 0, len(sums) - 1):
+            for j in range( i + 1, len(sums)):
+                need_to_add = get_need_to_add( total_sum, sums[i], sums[j])
+                if( need_to_add != -1):
+                    if(res == -1 or need_to_add < res):
+                        res = need_to_add
+
+        return res
+
+def get_need_to_add( total, one, two):
+    sums = []
+    sums.append( one)
+    sums.append( two)
+    sums.append( total - one - two)
+    sums.sort()
+    if(sums[ 1] == sums[2]):
+        return sums[1] - sums[0]
+    else:
+        return -1
 
 #[1, 2, 2, 1, 1]
 #[[1, 2], [1, 3], [3, 5], [1, 4]]
 def balancedForest(c, edges):
-    #print( c)
-    #print( edges)
     tree = Tree( c, edges)
+    tree.create_dict()
+    tree.create_sum( 1)
+    #print(tree._dictionary)
     return tree.get_balanced_forest()
 
 if __name__ == '__main__':
