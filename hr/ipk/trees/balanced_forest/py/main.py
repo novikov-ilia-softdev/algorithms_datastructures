@@ -45,17 +45,15 @@ class Tree:
 
         total_sum = sums[0]
         sums = sums[1:]
-        #print(sums)
 
         res = -1
 
-        for i in range( 0, len(sums) - 1):
-            for j in range( i + 1, len(sums)):
-                need_to_add = get_need_to_add( total_sum, sums[i], sums[j])
-                if( need_to_add != -1):
-                    if(res == -1 or need_to_add < res):
-                        res = need_to_add
+        target_subtree_sum = math.ceil(total_sum / 3)
+        sums.sort( reverse = True)
 
+        for i in range( 0, len(sums)):
+            #1)find target_subtree_sum
+            
         return res
 
 def get_need_to_add( total, one, two):
