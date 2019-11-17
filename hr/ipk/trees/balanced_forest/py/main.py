@@ -46,47 +46,26 @@ class Tree:
         total_sum = sums[0]
         sums = sums[1:]
 
-        #target_subtree_sum = math.ceil(total_sum / 3)
-        sums.sort( reverse = True)
-        target_subtree_sum = sums[0]
-
-        #print(target_subtree_sum)
-        #print(sums)
-
-        sums = sums[1:]
-        total_sum -= target_subtree_sum
-
-        #print(total_sum)
-        #print(sums)
-
         res = -1
 
-        for i in sums:
-            print(i)
-            if( i == target_subtree_sum):
-                cur = total_sum - target_subtree_sum - i
-                cur = abs(cur)
-                if( res == -1 or cur < res):
-                    res = cur
+        for i in range( 0, len(sums) - 1):
+            for j in range( i + 1, len(sums)):
+                if(sums[i] == sums[j]):
+                    cur = (sums[i] * 3) - total_sum
+                    if( cur > 0 and (res == -1 or cur < res)):
+                        res = cur
 
-            if( total_sum - i == target_subtree_sum):
-                cur = target_subtree_sum - i
-                cur = abs(cur)
-                if( res == -1 or cur < res):
-                    res = cur
+                if(total_sum - sums[i] - sums[j] == sums[i]):
+                    cur = (sums[i] * 3) - total_sum
+                    if( cur > 0 and (res == -1 or cur < res)):
+                        res = cur
+
+                if(total_sum - sums[i] - sums[j] == sums[j]):
+                    cur = (sums[j] * 3) - total_sum
+                    if( cur > 0 and (res == -1 or cur < res)):
+                        res = cur
 
         return res
-
-def get_need_to_add( total, one, two):
-    sums = []
-    sums.append( one)
-    sums.append( two)
-    sums.append( total - one - two)
-    sums.sort()
-    if(sums[ 1] == sums[2]):
-        return sums[1] - sums[0]
-    else:
-        return -1
 
 #[1, 2, 2, 1, 1]
 #[[1, 2], [1, 3], [3, 5], [1, 4]]
