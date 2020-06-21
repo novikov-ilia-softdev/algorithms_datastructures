@@ -48,24 +48,24 @@ class Tree:
 
         res = -1
 
-        target_subtree_sum = math.ceil(total_sum / 3)
-        sums.sort( reverse = True)
+        for i in range( 0, len(sums) - 1):
+            for j in range( i + 1, len(sums)):
+                if(sums[i] == sums[j]):
+                    cur = (sums[i] * 3) - total_sum
+                    if( cur > 0 and (res == -1 or cur < res)):
+                        res = cur
 
-        for i in range( 0, len(sums)):
-            #1)find target_subtree_sum
-            
+                if(total_sum - sums[i] - sums[j] == sums[i]):
+                    cur = (sums[i] * 3) - total_sum
+                    if( cur > 0 and (res == -1 or cur < res)):
+                        res = cur
+
+                if(total_sum - sums[i] - sums[j] == sums[j]):
+                    cur = (sums[j] * 3) - total_sum
+                    if( cur > 0 and (res == -1 or cur < res)):
+                        res = cur
+
         return res
-
-def get_need_to_add( total, one, two):
-    sums = []
-    sums.append( one)
-    sums.append( two)
-    sums.append( total - one - two)
-    sums.sort()
-    if(sums[ 1] == sums[2]):
-        return sums[1] - sums[0]
-    else:
-        return -1
 
 #[1, 2, 2, 1, 1]
 #[[1, 2], [1, 3], [3, 5], [1, 4]]
