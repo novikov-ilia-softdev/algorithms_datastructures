@@ -1,5 +1,4 @@
 import collections
-import copy
 
 class Solution:
     def getKnightPaths(self, targetPos, blockedList):
@@ -8,55 +7,51 @@ class Solution:
         blockedSet = set(blockedList)
         
         q = collections.deque()
-        q.appendleft({'i': 0, 'j': 0, 'path':[(0, 0)], 'visited': set()})
+        visited = set()
+        q.appendleft({'pos': (0, 0), 'path': []})
         
         while q:
             curPos = q.pop()
-            
+
+            curPos['path'].append(curPos['pos'])
+
             if paths and len(curPos['path']) > len(paths[0]):
                 continue
-            
-            if curPos['i'] == targetPos['i'] and curPos['j'] == targetPos['j']:
+
+            if curPos['pos'] == targetPos:
                 paths.append(curPos['path'])
-                
-            if (curPos['i'], curPos['j']) in curPos['visited']:
+
+            if curPos['pos'] in visited:
                 continue
-            
-            if (curPos['i'], curPos['j']) in blockedSet:
+
+            if curPos['pos'] in blockedSet:
                 continue
+
+            visited.add(curPos['pos'])
             
-            curPos['visited'].add((curPos['i'], curPos['j']))
-            
-            for nei in getNeis(curPos):
+            for nei in getNeis(curPos['pos']):
                 q.appendleft(nei)
+                nei['path'] = curPos['path'].copy()
                 
         return paths
     
     
 def getNeis(pos):
     neis = []
-    
-    up = copy.deepcopy(pos)
-    up['i'] += 1
-    up['path'].append((up['i'], up['j']))
-    neis.append(up)
-    
-    down = copy.deepcopy(pos)
-    down['i'] -= 1
-    down['path'].append((down['i'], down['j']))
-    neis.append(down)
-    
-    left = copy.deepcopy(pos)
-    left['j'] -= 1
-    left['path'].append((left['i'], left['j']))
-    neis.append(left)
-    
-    right = copy.deepcopy(pos)
-    right['j'] += 1
-    right['path'].append((right['i'], right['j']))
-    neis.append(right)
-    
+    row = pos[0]
+    col = pos[1]
+
+    neis.append({'pos': (row - 2, col + 1), 'path': []})
+    neis.append({'pos': (row - 1, col + 2), 'path': []})
+    neis.append({'pos': (row + 2, col + 1), 'path': []})
+    neis.append({'pos': (row + 1, col + 2), 'path': []})
+    neis.append({'pos': (row + 2, col - 1), 'path': []})
+    neis.append({'pos': (row + 1, col - 2), 'path': []})
+    neis.append({'pos': (row - 2, col - 1), 'path': []})
+    neis.append({'pos': (row - 1, col - 2), 'path': []})
+
     return neis
     
     
-print(Solution().getKnightPaths({'i': 1, 'j': 1}, []))
+print( 'two paths: ', (Solution().getKnightPaths((-3, 3), [])) == [[(0, 0), (-2, 1), (-3, 3)], [(0, 0), (-1, 2), (-3, 3)]])
+print( 'one path: ', (Solution().getKnightPaths((-3, 3), [(-1, 2)])) == [[(0, 0), (-2, 1), (-3, 3)]])
