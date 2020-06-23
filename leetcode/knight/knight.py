@@ -21,18 +21,12 @@ class Solution:
                 pathsToTarget.append(curPath)
                 continue
 
-            if curPath[-1] in visited:
-                continue
-
-            if curPath[-1] in blockedSet:
-                continue
-
-            visited.add(curPath[-1])
-            
             for nei in getNeis(curPath[-1]):
-                neiPath = curPath.copy()
-                neiPath.append(nei)
-                q.appendleft({'path': neiPath, 'visited': visited.copy()})
+                if nei not in visited and nei not in blockedSet:
+                    visited.add(nei)
+                    neiPath = curPath.copy()
+                    neiPath.append(nei)
+                    q.appendleft({'path': neiPath, 'visited': visited.copy()})
 
         return pathsToTarget
     
